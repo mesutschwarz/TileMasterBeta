@@ -1,0 +1,107 @@
+import React, { useState, useRef, useEffect, ReactNode } from 'react'
+import { clsx } from 'clsx'
+
+export type DockPosition = 'top' | 'bottom' | 'left' | 'right' | 'floating'
+
+interface DraggableToolbarProps {
+    id: string
+    title: string
+    showTitle?: boolean
+    dock: DockPosition
+    position: { x: number, y: number }
+    onDockChange: (dock: DockPosition) => void
+    onPositionChange: (pos: { x: number, y: number }) => void
+    children: ReactNode
+    className?: string
+}
+
+export const DraggableToolbar: React.FC<DraggableToolbarProps> = ({
+    id, title, showTitle = true, dock, position, onDockChange, onPositionChange, children, className
+}) => {
+    const [isDragging, setIsDragging] = useState(false)
+    const dragStartOffset = useRef({ x: 0, y: 0 })
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true)
+        dragStartOffset.current = {
+            x: e.clientX - position.x,
+            y: e.clientY - position.y
+        }
+
+        if (dock !== 'floating') {
+            onDockChange('floating')
+        }
+    }
+
+    useEffect(() => {
+        if (!isDragging) return
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const newX = e.clientX - dragStartOffset.current.x
+            const newY = e.clientY - dragStartOffset.current.y
+            onPositionChange({ x: newX, y: newY })
+
+            // Simple snapping logic
+            const threshold = 40
+            const parent = containerRef.current?.parentElement
+            if (parent) {
+                const rect = parent.getBoundingClientRect()
+                if (e.clientX < rect.left + threshold) onDockChange('left')
+                else if (e.clientX > rect.right - threshold) onDockChange('right')
+                else if (e.clientY < rect.top + threshold) onDockChange('top')
+                else if (e.clientY > rect.bottom - threshold) onDockChange('bottom')
+            }
+        }
+
+        const handleMouseUp = () => {
+            setIsDragging(false)
+        }
+
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove)
+            window.removeEventListener('mouseup', handleMouseUp)
+        }
+    }, [isDragging, dock, onDockChange, onPositionChange])
+
+    return (
+        <div
+            ref={containerRef}
+            data-toolbar-id={id}
+            style={dock === 'floating' ? { left: position.x, top: position.y } : {}}
+            className={clsx(
+                "transition-[width,height,opacity] duration-200 select-none",
+                dock === 'floating' ? "fixed z-[100] bg-bg-secondary/95 backdrop-blur-md rounded-xl border border-ui-border-subtle shadow-2xl overflow-hidden" : "relative flex-shrink-0",
+                (dock === 'left' || dock === 'right') && "w-auto min-w-[3rem] h-full border-ui-border-subtle bg-bg-secondary",
+                dock === 'left' && "border-r",
+                dock === 'right' && "border-l",
+                (dock === 'top' || dock === 'bottom') && "h-auto min-h-[3rem] w-full border-ui-border-subtle bg-bg-secondary",
+                dock === 'top' && "border-b",
+                dock === 'bottom' && "border-t",
+                isDragging && "opacity-70 cursor-grabbing !transition-none",
+                className
+            )}
+        >
+            <div className="flex h-full w-full flex-col">
+                <div
+                    onMouseDown={handleMouseDown}
+                    className={clsx(
+                        "h-6 px-2 flex items-center justify-between border-b border-ui-border-subtle bg-bg-secondary text-[9px] uppercase tracking-[0.2em] text-text-secondary",
+                        isDragging ? "cursor-grabbing" : "cursor-grab"
+                    )}
+                >
+                    <span className="truncate">{showTitle ? title : ''}</span>
+                    <span className="text-text-disabled">⋮⋮</span>
+                </div>
+                <div className={clsx(
+                    "flex-1 flex",
+                    (dock === 'top' || dock === 'bottom') ? "flex-row px-2 items-center" : "flex-col py-2 items-center"
+                )}>
+                    {children}
+                </div>
+            </div>
+        </div>
+    )
+}

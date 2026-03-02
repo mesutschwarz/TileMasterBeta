@@ -1,0 +1,366 @@
+@import 'dockview-react/dist/styles/dockview.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@layer base {
+  body {
+    background: var(--app-background, var(--bg-primary));
+    background-size: 300% 300%;
+    animation: gradientAnimation 24s ease infinite;
+    min-height: 100vh;
+    @apply text-text-primary;
+    transition: color 0.3s ease;
+  }
+}
+
+@layer components {
+  .app-shell {
+    background: transparent;
+    color: var(--text-primary);
+  }
+
+  /* Sleek modern status bar */
+  .status-bar {
+    height: 28px;
+    background: var(--bg-statusbar);
+    border-top: 1px solid var(--ui-border-subtle);
+    color: var(--text-secondary);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  /* Activity bar, now fully modern */
+  .activity-bar {
+    width: 68px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 8px;
+  }
+
+  .activity-icon {
+    color: var(--text-disabled);
+    transition: all 0.2s ease;
+    border-radius: 12px;
+  }
+
+  .activity-icon:hover {
+    color: var(--text-primary);
+    background: var(--ui-bg-hover);
+  }
+
+  .activity-icon.active {
+    color: var(--accent-primary);
+    background: var(--ui-bg-subtle);
+    box-shadow: inset 3px 0 0 0 var(--accent-primary);
+  }
+
+  /* Smooth inputs */
+  .modern-input {
+    background: var(--ui-input-bg);
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    box-shadow: inset 0 0 0 1px var(--ui-input-border), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-weight: 500;
+  }
+
+  .modern-input::placeholder {
+    color: var(--text-disabled);
+  }
+
+  .modern-input:focus {
+    box-shadow: inset 0 0 0 1px var(--accent-primary), 0 0 0 3px color-mix(in srgb, var(--accent-primary) 30%, transparent);
+    background: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  /* Beautiful floating context menu */
+  .context-menu {
+    position: fixed;
+    min-width: 200px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--ui-border-strong);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px var(--ui-border-subtle);
+    z-index: 9999;
+  }
+
+  .context-menu-item {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 150ms ease, color 150ms ease;
+  }
+
+  .context-menu-item:hover,
+  .context-menu-item.is-active {
+    background: var(--accent-primary);
+    color: #fff;
+  }
+
+  /* Elegant side panel sections */
+  .panel-header {
+    height: 48px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--ui-border-subtle);
+    background: var(--bg-secondary);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    font-weight: 700;
+  }
+
+  .section-header {
+    height: 36px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--ui-border-subtle);
+    background: var(--bg-tertiary);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  /* Action buttons */
+  .action-button {
+    color: var(--text-secondary);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .action-button:hover {
+    background: var(--ui-bg-hover-strong);
+    color: var(--text-primary);
+  }
+
+  /* Modern Tooltips */
+  .modern-tooltip {
+    position: fixed;
+    z-index: 3000;
+    max-width: 280px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--ui-border-strong);
+    color: var(--text-primary);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Glassmorphism utility */
+  .glass-panel {
+    background: var(--bg-primary);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid var(--ui-border-strong);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05), inset 0 0 20px var(--ui-border-subtle);
+  }
+
+  .quick-theme-select {
+    background: var(--ui-input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--ui-input-border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: border-color 0.2s;
+  }
+
+  .quick-theme-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+  }
+}
+
+/* --- Totally Custom Dockview Theme --- */
+.dockview-theme-custom {
+  height: 100%;
+  width: 100%;
+  --dv-activegroup-visiblepanel-tab-background-color: var(--ui-bg-subtle);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--bg-tertiary);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--bg-tertiary);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--bg-secondary);
+
+  --dv-activegroup-visiblepanel-tab-color: var(--accent-primary);
+  --dv-activegroup-hiddenpanel-tab-color: var(--text-secondary);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--text-secondary);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--text-disabled);
+
+  --dv-group-view-background-color: var(--bg-primary);
+  --dv-separator-color: var(--ui-border-subtle);
+  --dv-separator-border: transparent;
+
+  --dv-pane-header-background-color: var(--bg-secondary);
+  --dv-paneview-header-border-color: var(--ui-border-subtle);
+  --dv-paneview-active-outline-color: var(--accent-primary);
+
+  --dv-tabs-and-actions-container-background-color: var(--bg-secondary);
+  --dv-tab-background-color: var(--bg-tertiary);
+  --dv-tab-color: var(--text-secondary);
+  --dv-tab-divider-color: var(--ui-border-subtle);
+  --dv-icon-hover-background-color: var(--ui-bg-hover-strong);
+}
+
+.dockview-theme-custom .dv-tab {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 0 24px;
+  color: var(--text-disabled);
+  background: transparent;
+  border-radius: 12px 12px 0 0;
+  margin-top: 8px;
+  margin-left: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dockview-theme-custom .dv-tab.dv-active-tab {
+  color: var(--accent-primary);
+  background: var(--ui-bg-subtle);
+  box-shadow: inset 0 2px 0 var(--accent-primary);
+}
+
+.dockview-theme-custom .dv-pane-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--ui-border-subtle);
+  padding: 8px 16px;
+}
+
+.dockview-theme-custom .dv-tab:hover:not(.dv-active-tab) {
+  color: var(--text-primary);
+  background: var(--ui-bg-hover-strong);
+}
+
+.dockview-theme-custom .dv-tabs-and-actions-container {
+  height: 44px;
+  padding-right: 8px;
+  border-bottom: 1px solid var(--ui-border-subtle);
+}
+
+.dockview-theme-custom .dv-actions-container .dv-action {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.dockview-theme-custom .dv-actions-container .dv-action:hover {
+  color: var(--accent-primary);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-secondary) 60%, transparent) color-mix(in srgb, var(--bg-secondary) 70%, transparent);
+  scrollbar-gutter: stable;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--bg-secondary) 75%, transparent);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-secondary) 55%, transparent);
+  border: 2px solid color-mix(in srgb, var(--bg-secondary) 75%, transparent);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-primary) 65%, transparent);
+}
+
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-disabled) 40%, transparent);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-disabled) 70%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-disabled) 40%, transparent) transparent;
+}
+
+.pixelated {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
