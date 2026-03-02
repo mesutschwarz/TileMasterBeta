@@ -1,6 +1,6 @@
-# TileMaster Alpha (Public Overview)
+# TileMaster Beta (Public Overview)
 
-TileMaster Alpha is a modern, browser-based tile and tilemap editor for retro-style game workflows.
+TileMaster Beta is a modern, browser-based tile and tilemap editor for retro-style game workflows.
 
 It helps artists and developers create tiles, assemble layered maps, validate against classic hardware constraints, and export assets in production-ready formats.
 
