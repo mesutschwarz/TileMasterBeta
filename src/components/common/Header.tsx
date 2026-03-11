@@ -96,6 +96,7 @@ export const Header: React.FC = () => {
     const handleCodeImportConfirm = (result: CodeImportResult, cleanup: boolean) => {
         removeDefaultsIfNeeded()
         const { tiles, maps } = result
+        const existingTileCount = useProjectStore.getState().tileset.tiles.length
 
         if (tiles.length > 0) {
             addTiles(tiles, `Tile: Import ${tiles.length}`)
@@ -104,8 +105,18 @@ export const Header: React.FC = () => {
 
         const { addMap, selectMap } = useProjectStore.getState()
         for (const map of maps) {
-            addMap(map)
-            selectMap(map.id)
+            const remapped: TileMap = {
+                ...map,
+                layers: map.layers.map(layer => {
+                    if (layer.type !== 'tile') return layer
+                    return {
+                        ...layer,
+                        data: layer.data.map(idx => idx >= 0 ? idx + existingTileCount : idx),
+                    }
+                }),
+            }
+            addMap(remapped)
+            selectMap(remapped.id)
         }
 
         if (cleanup) {
