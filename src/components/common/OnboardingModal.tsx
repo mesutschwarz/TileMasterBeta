@@ -29,7 +29,7 @@ export const OnboardingModal: React.FC<{ forceOpen?: boolean, onForceClose?: () 
 
     const steps = [
         {
-            title: "Welcome to TileMaster",
+            title: "Welcome to TileMaster Beta",
             description: "The professional asset editor for retro game developers. Let's get you oriented in 30 seconds.",
             icon: Zap,
             color: "text-accent-primary",
