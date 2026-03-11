@@ -64,6 +64,15 @@ export const MapCanvas: React.FC = () => {
 
     const themeColors = React.useMemo(() => getThemeCanvasColors(), [themeId])
 
+    // Invalidate layer cache when tile bitmaps change so tile layers re-render
+    const tileCanvasGenRef = useRef(0)
+    const prevTileCanvasesRef = useRef(tileCanvases)
+    if (prevTileCanvasesRef.current !== tileCanvases) {
+        prevTileCanvasesRef.current = tileCanvases
+        tileCanvasGenRef.current += 1
+        layerCacheRef.current.clear()
+    }
+
     const layerCanvases = React.useMemo(() => {
         if (!activeMap || typeof document === 'undefined') return [] as { id: string; visible: boolean; canvas: HTMLCanvasElement }[]
 
