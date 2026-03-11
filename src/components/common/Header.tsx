@@ -72,7 +72,29 @@ export const Header: React.FC = () => {
         }
     }
 
+    /** Remove the default empty tile & map if they're the only content in the project. */
+    const removeDefaultsIfNeeded = () => {
+        const state = useProjectStore.getState()
+        const { tiles } = state.tileset
+        const { maps } = state
+
+        const hasOnlyDefaultTile = tiles.length === 1 && tiles[0].data.every(v => v === 0)
+        const hasOnlyDefaultMap = maps.length === 1 && maps[0].layers.every(
+            l => l.type !== 'tile' || l.data.every(v => v === 0)
+        )
+
+        if (hasOnlyDefaultTile && hasOnlyDefaultMap) {
+            useProjectStore.setState({
+                tileset: { ...state.tileset, tiles: [] },
+                maps: [],
+                selectedTileId: null,
+                selectedMapId: null,
+            })
+        }
+    }
+
     const handleCodeImportConfirm = (result: CodeImportResult, cleanup: boolean) => {
+        removeDefaultsIfNeeded()
         const { tiles, maps } = result
 
         if (tiles.length > 0) {
@@ -100,6 +122,7 @@ export const Header: React.FC = () => {
     }
 
     const handleImportConfirm = (result: ImportResult, options: ImportOptions) => {
+        removeDefaultsIfNeeded()
         const { tiles, mapWidth, mapHeight, mapData } = result
         const existingTileCount = useProjectStore.getState().tileset.tiles.length
         const adjustedMapData = mapData.map((idx) => (idx >= 0 ? idx + existingTileCount : idx))
