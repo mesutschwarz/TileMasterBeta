@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Monitor, ChevronDown, Share2, HelpCircle, Settings as SettingsIcon } from 'lucide-react'
+import { Monitor, ChevronDown, Share2, HelpCircle, Settings as SettingsIcon, Save, FolderOpen } from 'lucide-react'
 import { useProjectStore } from '../../stores/projectStore'
 import { PLATFORMS } from '../../core/platforms'
 import { PlatformId } from '../../types/platform'
@@ -15,7 +15,7 @@ import { ImportOptions, ImportResult } from '../../importers/pngImporter'
 import { TileMap } from '../../types/map'
 
 export const Header: React.FC = () => {
-    const { platform, setPlatform, addTiles, selectTile, cleanupTiles } = useProjectStore()
+    const { platform, setPlatform, addTiles, selectTile, cleanupTiles, saveProject, loadProject } = useProjectStore()
     const { setView, setShowSettings, themeId, setThemeId } = useEditorStore()
     const [showExport, setShowExport] = useState(false)
     const [showHelp, setShowHelp] = useState(false)
@@ -174,6 +174,22 @@ export const Header: React.FC = () => {
                 >
                     <SettingsIcon size={14} />
                     Settings
+                </button>
+
+                <button
+                    onClick={saveProject}
+                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
+                >
+                    <Save size={14} />
+                    Save
+                </button>
+
+                <button
+                    onClick={loadProject}
+                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
+                >
+                    <FolderOpen size={14} />
+                    Load
                 </button>
 
                 <button
