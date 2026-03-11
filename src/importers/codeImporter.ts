@@ -1,4 +1,5 @@
 import { Tile } from '../types/tile'
+import { TileMap, MapLayer } from '../types/map'
 
 /**
  * Heuristic to detect if a file content looks like GBDK C source or Header
@@ -7,66 +8,214 @@ export const isCFile = (filename: string): boolean => {
     return filename.endsWith('.c') || filename.endsWith('.h')
 }
 
-/**
- * Parses a C/H file to find tile arrays.
- * It looks for arrays defined as `const unsigned char ... [] = { ... }`
- * It attempts to parse the hex values and convert them to Tile objects.
- *
- * Supports GBDK 2bpp planar (GB/GBC/Mega Duck) and 4bpp planar (SMS/GG) data.
- */
-export const importCode = (content: string, width: number, height: number, encoding: '2bpp' | '4bpp' = '2bpp'): Tile[] => {
-    const tiles: Tile[] = []
+export interface CodeImportResult {
+    tiles: Tile[]
+    maps: TileMap[]
+}
 
-    // Regex to find arrays: const unsigned char NAME[] = { DATA };
-    // Matches "const unsigned char", optional "BANK(n)", name, "[]", "=", "{", data, "}"
-    const arrayRegex = /const\s+unsigned\s+char\s+(?:BANK\(\d+\)\s+)?([a-zA-Z0-9_]+)\[\]\s*=\s*{([^}]+)}/g
+/**
+ * Parse hex/dec byte values from an array body string, stripping comments.
+ */
+const parseBytes = (dataStr: string): number[] => {
+    const clean = dataStr.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '')
+    return clean
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
+        .map(s => (s.startsWith('0x') || s.startsWith('0X')) ? parseInt(s, 16) : parseInt(s, 10))
+        .filter(n => !isNaN(n))
+}
+
+/**
+ * Extract per-tile names from TileMaster-style comments inside a tile array body.
+ * Format: /* Tile 0xNN: TileName * /
+ */
+const extractTileNames = (dataStr: string): Map<number, string> => {
+    const names = new Map<number, string>()
+    const re = /\/\*\s*Tile\s+0x([0-9A-Fa-f]+):\s*(.+?)\s*\*\//g
+    let m
+    while ((m = re.exec(dataStr)) !== null) {
+        const idx = parseInt(m[1], 16)
+        const name = m[2].trim()
+        if (name) names.set(idx, name)
+    }
+    return names
+}
+
+/**
+ * Try to extract map WIDTH / HEIGHT defines from a header or C file.
+ * Looks for patterns like: #define prefix_map_WIDTH 20
+ */
+const extractMapDimensions = (content: string): { width: number; height: number } | null => {
+    const wMatch = content.match(/#define\s+\w+_map_WIDTH\s+(\d+)/)
+    const hMatch = content.match(/#define\s+\w+_map_HEIGHT\s+(\d+)/)
+    if (wMatch && hMatch) {
+        return { width: parseInt(wMatch[1], 10), height: parseInt(hMatch[1], 10) }
+    }
+    return null
+}
+
+/**
+ * Extract layer name and type from a TileMaster comment preceding a map array.
+ * Format: /* Layer: LayerName (type) * /
+ */
+const extractLayerMeta = (content: string, arrayStart: number): { layerName: string; layerType: string } | null => {
+    // Search backwards from the array definition start for the nearest Layer comment
+    const preceding = content.substring(Math.max(0, arrayStart - 200), arrayStart)
+    const m = preceding.match(/\/\*\s*Layer:\s*(.+?)\s*\((\w+)\)\s*\*\//)
+    if (m) return { layerName: m[1].trim(), layerType: m[2].trim() }
+    return null
+}
+
+/**
+ * Parses a C/H file to find tile and map arrays.
+ * Supports GBDK 2bpp planar (GB/GBC/Mega Duck/NES) and 4bpp planar (SMS/GG) data.
+ *
+ * Round-trip compatible with TileMaster exports.
+ * Robust against external / manually-written C files.
+ */
+export const importCode = (content: string, width: number, height: number, encoding: '2bpp' | '4bpp' = '2bpp'): CodeImportResult => {
+    const tiles: Tile[] = []
+    const maps: TileMap[] = []
 
     const bitsPerPixel = encoding === '4bpp' ? 4 : 2
     const bytesPerTile = (width * height * bitsPerPixel) / 8
 
+    // Regex to find arrays: const unsigned char [BANK(n)] NAME[] = { DATA };
+    const arrayRegex = /const\s+unsigned\s+char\s+(?:BANK\(\d+\)\s+)?([a-zA-Z0-9_]+)\[\]\s*=\s*\{([^}]+)\}/g
+
+    // Collect raw arrays grouped by tile vs map
+    const tileArrays: { name: string; dataStr: string }[] = []
+    const mapArrays: { name: string; dataStr: string; offset: number }[] = []
+
     let match
     while ((match = arrayRegex.exec(content)) !== null) {
-        const name = match[1]
+        const arrayName = match[1]
         const dataStr = match[2]
 
-        // Clean comments and whitespace
-        const cleanData = dataStr.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '')
+        if (arrayName.includes('_map_')) {
+            mapArrays.push({ name: arrayName, dataStr, offset: match.index })
+        } else {
+            tileArrays.push({ name: arrayName, dataStr })
+        }
+    }
 
-        // Parse hex values
-        const bytes = cleanData
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s.length > 0)
-            .map(s => {
-                if (s.startsWith('0x') || s.startsWith('0X')) return parseInt(s, 16)
-                return parseInt(s, 10)
-            })
-            .filter(n => !isNaN(n))
-
+    // --- Process tile arrays ---
+    for (const arr of tileArrays) {
+        const bytes = parseBytes(arr.dataStr)
         if (bytes.length === 0) continue
 
-        // Skip map arrays — only import tile data
-        if (name.includes('_map_')) continue
+        const tileNames = extractTileNames(arr.dataStr)
+        const tileCountInArray = Math.floor(bytes.length / bytesPerTile)
 
-        for (let i = 0; i < bytes.length; i += bytesPerTile) {
-            const tileBytes = bytes.slice(i, i + bytesPerTile)
-            if (tileBytes.length < bytesPerTile) break // Incomplete tile
+        for (let i = 0; i < tileCountInArray; i++) {
+            const tileBytes = bytes.slice(i * bytesPerTile, (i + 1) * bytesPerTile)
+            if (tileBytes.length < bytesPerTile) break
 
-            const tileId = `tile-code-${name}-${tiles.length}`
             const tileData = encoding === '4bpp'
                 ? decodeGbdk4bpp(tileBytes)
                 : decodeGbdk2bpp(tileBytes)
 
-            tiles.push({
-                id: tileId,
+            const tile: Tile = {
+                id: `tile-code-${arr.name}-${tiles.length}`,
                 data: tileData,
-                width: width,
-                height: height
-            })
+                width,
+                height,
+            }
+
+            const commentName = tileNames.get(i)
+            if (commentName) tile.name = commentName
+
+            tiles.push(tile)
         }
     }
 
-    return tiles
+    // --- Process map arrays ---
+    // Try to get dimensions from #define macros first
+    const definedDims = extractMapDimensions(content)
+
+    for (const arr of mapArrays) {
+        const bytes = parseBytes(arr.dataStr)
+        if (bytes.length === 0) continue
+
+        // Determine map dimensions
+        let mapW: number
+        let mapH: number
+
+        if (definedDims) {
+            mapW = definedDims.width
+            mapH = definedDims.height
+        } else {
+            // Heuristic: use the number of values per row from the source formatting
+            const firstDataLine = arr.dataStr
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(/\/\/.*/g, '')
+                .split('\n')
+                .map(l => l.trim())
+                .find(l => l.includes('0x') || /^\d/.test(l))
+            if (firstDataLine) {
+                const valsOnLine = firstDataLine.split(',').filter(s => s.trim().length > 0).length
+                if (valsOnLine > 0 && bytes.length % valsOnLine === 0) {
+                    mapW = valsOnLine
+                    mapH = bytes.length / valsOnLine
+                } else {
+                    // Fallback: square-ish
+                    mapW = Math.ceil(Math.sqrt(bytes.length))
+                    mapH = Math.ceil(bytes.length / mapW)
+                }
+            } else {
+                mapW = Math.ceil(Math.sqrt(bytes.length))
+                mapH = Math.ceil(bytes.length / mapW)
+            }
+        }
+
+        // Extract layer metadata from TileMaster comments
+        const layerMeta = extractLayerMeta(content, arr.offset)
+        const layerName = layerMeta?.layerName || 'Background'
+        const layerType = (layerMeta?.layerType === 'collision' || layerMeta?.layerType === 'object')
+            ? layerMeta.layerType
+            : 'tile'
+
+        // Derive a human-readable map name from the array name
+        // e.g. "project_map_background" → strip the prefix before "_map_" and the layer suffix
+        const mapNameParts = arr.name.split('_map_')
+        const baseName = mapNameParts[0] ?? 'Imported'
+
+        // Check if we already have a map for this base name (multiple layers)
+        const existingMap = maps.find(m => (m as any)._baseName === baseName)
+
+        const layer: MapLayer = {
+            id: crypto.randomUUID(),
+            name: layerName,
+            type: layerType as any,
+            data: bytes.slice(0, mapW * mapH),
+            visible: true,
+            locked: false,
+        }
+
+        if (existingMap) {
+            // Add as an additional layer to the same map
+            existingMap.layers.push(layer)
+        } else {
+            const newMap: TileMap = {
+                id: crypto.randomUUID(),
+                name: `${baseName.replace(/_/g, ' ')}`,
+                width: mapW,
+                height: mapH,
+                layers: [layer],
+            }
+                // Tag for grouping layers — stripped before returning
+                ; (newMap as any)._baseName = baseName
+            maps.push(newMap)
+        }
+    }
+
+    // Clean up internal tags
+    for (const m of maps) {
+        delete (m as any)._baseName
+    }
+
+    return { tiles, maps }
 }
 
 /**

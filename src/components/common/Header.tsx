@@ -55,15 +55,37 @@ export const Header: React.FC = () => {
 
         if (isCFile(file.name)) {
             const text = await file.text()
-            const tiles = importCode(text, platform.tileWidth, platform.tileHeight, platform.encoding)
+            const result = importCode(text, platform.tileWidth, platform.tileHeight, platform.encoding)
+            const { tiles, maps } = result
+
+            if (tiles.length === 0 && maps.length === 0) {
+                alert('No valid tile or map data found in file.')
+                if (fileInputRef.current) fileInputRef.current.value = ''
+                return
+            }
+
             if (tiles.length > 0) {
                 addTiles(tiles, `Tile: Import ${tiles.length}`)
                 selectTile(tiles[0].id)
-                setView('tile')
-                alert(`Imported ${tiles.length} tiles from code file.`)
-            } else {
-                alert('No valid tile data found in file.')
             }
+
+            const { addMap, selectMap } = useProjectStore.getState()
+            for (const map of maps) {
+                addMap(map)
+                selectMap(map.id)
+            }
+
+            if (maps.length > 0) {
+                setView('map')
+            } else {
+                setView('tile')
+            }
+
+            const parts: string[] = []
+            if (tiles.length > 0) parts.push(`${tiles.length} tiles`)
+            if (maps.length > 0) parts.push(`${maps.length} map(s)`)
+            alert(`Imported ${parts.join(' and ')} from code file.`)
+
             // Reset input
             if (fileInputRef.current) fileInputRef.current.value = ''
         } else {
