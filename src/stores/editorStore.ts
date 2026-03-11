@@ -13,6 +13,7 @@ interface GridSettings {
 
 interface EditorState {
     view: ViewMode
+    sidebarView: ViewMode
     selectedTool: ToolId
     zoom: number
     mapZoom: number
@@ -43,6 +44,7 @@ interface EditorState {
 
     // Actions
     setView: (view: ViewMode) => void
+    setSidebarView: (view: ViewMode) => void
     setSidebarVisible: (visible: boolean) => void
     toggleSidebar: () => void
     selectedLayerId: string | null
@@ -74,6 +76,7 @@ interface EditorState {
 
 export const useEditorStore = create<EditorState>((set) => ({
     view: 'tile',
+    sidebarView: 'tile',
     selectedTool: 'pencil',
     activeColorIndex: 3,
     brushSize: 1,
@@ -112,6 +115,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     showSettings: false,
 
     setView: (view) => set({ view }),
+    setSidebarView: (sidebarView) => set({ sidebarView }),
     setSidebarVisible: (sidebarVisible) => set({ sidebarVisible }),
     toggleSidebar: () => set((state) => ({ sidebarVisible: !state.sidebarVisible })),
     setSelectedLayer: (selectedLayerId) => set({ selectedLayerId }),

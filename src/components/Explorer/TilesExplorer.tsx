@@ -358,7 +358,7 @@ export const TilesExplorer: React.FC = () => {
                     </div>
 
                     {tileset.tiles.length === 0 && (
-                        <div className="py-12 text-center text-sm italic text-text-disabled bg-ui-bg-subtle rounded-xl border border-ui-border-subtle shadow-inner">
+                        <div className="py-12 text-center text-sm italic text-text-disabled  shadow-inner">
                             No tiles yet
                         </div>
                     )}

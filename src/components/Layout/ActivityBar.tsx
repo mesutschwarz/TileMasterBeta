@@ -5,13 +5,13 @@ import { clsx } from 'clsx'
 import { Tooltip } from '../common/Tooltip'
 
 export const ActivityBar: React.FC = () => {
-    const { view, setView, sidebarVisible, setSidebarVisible, toggleSidebar, setShowSettings } = useEditorStore()
+    const { sidebarView, setSidebarView, sidebarVisible, setSidebarVisible, toggleSidebar, setShowSettings } = useEditorStore()
 
     const handleViewClick = (newView: ViewMode) => {
-        if (view === newView) {
+        if (sidebarView === newView) {
             toggleSidebar()
         } else {
-            setView(newView)
+            setSidebarView(newView)
             setSidebarVisible(true)
         }
     }
@@ -22,7 +22,7 @@ export const ActivityBar: React.FC = () => {
         label: string,
         shortcut: string
     }> = ({ id, icon, label, shortcut }) => {
-        const active = view === id && sidebarVisible
+        const active = sidebarView === id && sidebarVisible
 
         return (
             <Tooltip content={label} position="right" shortcut={shortcut}>
