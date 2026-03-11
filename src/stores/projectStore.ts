@@ -4,6 +4,16 @@ import { Tile, Tileset } from '../types/tile'
 import { TileMap, MapLayer, LayerType } from '../types/map'
 import { PLATFORMS } from '../core/platforms'
 
+const PLATFORM_KEY = 'tilemaster-platform'
+
+function loadPlatformId(): PlatformId {
+    try {
+        const id = localStorage.getItem(PLATFORM_KEY) as PlatformId | null
+        if (id && id in PLATFORMS) return id
+    } catch { /* unavailable */ }
+    return 'gb'
+}
+
 interface ProjectState {
     platform: PlatformSpec
     tileset: Tileset
@@ -55,7 +65,7 @@ interface ProjectState {
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
-    platform: PLATFORMS.gb,
+    platform: PLATFORMS[loadPlatformId()],
     tileset: { id: 'default', name: 'Main Tileset', tiles: [] },
     maps: [],
     selectedTileId: null,
@@ -149,6 +159,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     },
 
     setPlatform: (id, label) => {
+        try { localStorage.setItem(PLATFORM_KEY, id) } catch { /* unavailable */ }
         set({ platform: PLATFORMS[id] })
         get().recordHistory(label ?? 'Platform: Change')
     },
