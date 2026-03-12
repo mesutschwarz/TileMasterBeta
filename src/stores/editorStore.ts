@@ -1,6 +1,7 @@
 import { create } from 'zustand'
-import { getDefaultThemeId } from '../theme/themeRegistry'
+import { getDefaultThemeId } from '../theme/theme.catalog'
 import { STORAGE_KEYS } from '../app.config'
+import { readStoredThemeId, writeStoredThemeId } from '../theme/theme.userSettings'
 
 export type ToolId = 'pencil' | 'eraser' | 'fill' | 'picker' | 'line' | 'rect' | 'circle' | 'select'
 export type ViewMode = 'tile' | 'map'
@@ -57,6 +58,7 @@ function saveSettings(state: PersistedSettings) {
 }
 
 const saved = loadSettings()
+const savedThemeId = readStoredThemeId()
 
 interface EditorState {
     view: ViewMode
@@ -126,7 +128,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     showGrid: true,
     showMapGrid: true,
     sidebarVisible: true,
-    themeId: saved.themeId ?? defaultSettings.themeId,
+    themeId: savedThemeId ?? saved.themeId ?? defaultSettings.themeId,
     selectedLayerId: null,
     selectedCollisionId: 1,
     selectedObjectId: 1,
@@ -175,7 +177,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     setDrawingToolbarPos: (drawingToolbarPos) => set({ drawingToolbarPos }),
     setPalettePos: (palettePos) => set({ palettePos }),
     setShowSettings: (showSettings) => set({ showSettings }),
-    setThemeId: (themeId) => { const s = get(); saveSettings({ themeId, gridSettings: s.gridSettings, mapGridSettings: s.mapGridSettings, drawingToolbarDock: s.drawingToolbarDock, paletteDock: s.paletteDock }); set({ themeId }) },
+    setThemeId: (themeId) => {
+        const s = get()
+        saveSettings({ themeId, gridSettings: s.gridSettings, mapGridSettings: s.mapGridSettings, drawingToolbarDock: s.drawingToolbarDock, paletteDock: s.paletteDock })
+        writeStoredThemeId(themeId)
+        set({ themeId })
+    },
     resetSettings: () => {
         saveSettings(defaultSettings)
         set({

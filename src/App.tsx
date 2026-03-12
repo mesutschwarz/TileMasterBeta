@@ -9,7 +9,7 @@ import { useEditorStore } from './stores/editorStore'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { SettingsModal } from './components/common/SettingsModal'
 import { Panel, Group, Separator } from 'react-resizable-panels'
-import { applyThemeById } from './theme/themeApplier'
+import { applyThemeById } from './theme/theme.runtime'
 import { LoadingScreen } from './loading/LoadingScreen'
 
 function App() {

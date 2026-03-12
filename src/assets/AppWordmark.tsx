@@ -7,7 +7,7 @@
  *
  * ── Customisation ─────────────────────────────────────────────────────
  *  • Name text          →  APP_NAME_PART1 / APP_NAME_PART2 in app.config.ts
- *  • Accent colour      →  --accent-primary CSS variable (set by themeApplier)
+ *  • Accent colour      →  --accent-primary CSS variable (set by theme.runtime)
  *  • Font size / weight →  fontSize / fontWeight props (or className)
  * ─────────────────────────────────────────────────────────────────────── */
 

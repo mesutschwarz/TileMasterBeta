@@ -1,8 +1,9 @@
-import { getResolvedTheme } from './themeRegistry'
+import { getResolvedTheme } from './theme.catalog'
+import { AppTheme } from './theme.types'
 
 declare global {
     interface Window {
-        __TileMasterTheme?: ReturnType<typeof getResolvedTheme>
+        __TileMasterTheme?: AppTheme
     }
 }
 
@@ -14,20 +15,16 @@ const toRgbTuple = (hex: string): string | null => {
     if (!hex) return null
     let normalized = hex.trim()
 
-    // If it's already an rgba or rgb
     if (normalized.startsWith('rgb')) {
         const match = normalized.match(/\((.*?)\)/)
-        if (match) {
-            const parts = match[1].split(',').map(p => parseFloat(p))
-            if (parts.length >= 3) {
-                return `${Math.round(parts[0])} ${Math.round(parts[1])} ${Math.round(parts[2])}`
-            }
-        }
-        return null
+        if (!match) return null
+        const parts = match[1].split(',').map((p) => parseFloat(p))
+        if (parts.length < 3) return null
+        return `${Math.round(parts[0])} ${Math.round(parts[1])} ${Math.round(parts[2])}`
     }
 
     if (normalized.startsWith('#')) {
-        normalized = normalized.replace('#', '')
+        normalized = normalized.slice(1)
         if (normalized.length === 3) {
             const r = parseInt(normalized[0] + normalized[0], 16)
             const g = parseInt(normalized[1] + normalized[1], 16)
@@ -41,23 +38,30 @@ const toRgbTuple = (hex: string): string | null => {
             return `${r} ${g} ${b}`
         }
     }
+
     return null
 }
 
 const setCssVarRgb = (name: string, value: string) => {
     const rgb = toRgbTuple(value)
-    if (rgb) {
-        document.documentElement.style.setProperty(name, rgb)
+    if (rgb) setCssVar(name, rgb)
+}
+
+const applyThemeModeClasses = (themeType: 'dark' | 'light') => {
+    if (themeType === 'dark') {
+        document.documentElement.classList.add('dark')
+        document.documentElement.classList.remove('light')
+        return
     }
+
+    document.documentElement.classList.add('light')
+    document.documentElement.classList.remove('dark')
 }
 
 export const applyThemeById = (themeId: string) => {
     const theme = getResolvedTheme(themeId)
-    if (!theme) return
-
     const { colors } = theme
 
-    // Apply exact CSS variables configured in Tailwind + index.css
     setCssVar('--app-background', colors.appBackground)
     setCssVar('--bg-primary', colors.bgPrimary)
     setCssVar('--bg-secondary', colors.bgSecondary)
@@ -90,7 +94,6 @@ export const applyThemeById = (themeId: string) => {
     setCssVar('--warning', colors.warning)
     setCssVar('--error', colors.danger)
 
-    // RGB tuple versions for opacity modifiers in Tailwind
     setCssVarRgb('--bg-primary-rgb', colors.bgPrimary)
     setCssVarRgb('--bg-secondary-rgb', colors.bgSecondary)
     setCssVarRgb('--bg-tertiary-rgb', colors.bgTertiary)
@@ -105,15 +108,7 @@ export const applyThemeById = (themeId: string) => {
     setCssVarRgb('--warning-rgb', colors.warning)
     setCssVarRgb('--error-rgb', colors.danger)
 
-    // Add dark/light class to root
-    if (theme.type === 'dark') {
-        document.documentElement.classList.add('dark')
-        document.documentElement.classList.remove('light')
-    } else {
-        document.documentElement.classList.add('light')
-        document.documentElement.classList.remove('dark')
-    }
-
+    applyThemeModeClasses(theme.type)
     document.documentElement.dataset.theme = themeId
     window.__TileMasterTheme = theme
 }

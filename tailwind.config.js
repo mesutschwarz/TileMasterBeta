@@ -36,8 +36,6 @@ export default {
                     input: 'var(--ui-input-bg)',
                     border: 'var(--ui-border-subtle)',
                     borderStrong: 'var(--ui-border-strong)',
-                    muted: 'var(--ui-text-muted)',
-                    disabled: 'var(--ui-text-disabled)',
                     danger: 'var(--ui-danger)',
                     warning: 'var(--ui-warning)',
                     success: 'var(--ui-success)'

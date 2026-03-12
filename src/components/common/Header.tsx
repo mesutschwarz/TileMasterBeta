@@ -12,7 +12,7 @@ import { FolderInput } from 'lucide-react'
 import { isCFile, importCode, CodeImportResult } from '../../importers/codeImporter'
 
 import { useEditorStore } from '../../stores/editorStore'
-import { themeEntries } from '../../theme/themeRegistry'
+import { themeEntries } from '../../theme/theme.catalog'
 import { ImportOptions, ImportResult } from '../../importers/pngImporter'
 import { TileMap } from '../../types/map'
 

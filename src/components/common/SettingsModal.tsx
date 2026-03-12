@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { Grid, Eye, Map as MapIcon, Settings as SettingsIcon } from 'lucide-react'
 import { useEditorStore } from '../../stores/editorStore'
-import { themeEntries } from '../../theme/themeRegistry'
+import { themeEntries } from '../../theme/theme.catalog'
 import { clsx } from 'clsx'
 import { Modal } from './Modal'
 

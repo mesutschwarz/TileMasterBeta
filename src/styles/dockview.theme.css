@@ -1,0 +1,80 @@
+/* Dockview skinning isolated from general UI styles. */
+
+.dockview-theme-custom {
+  height: 100%;
+  width: 100%;
+  --dv-activegroup-visiblepanel-tab-background-color: var(--ui-bg-subtle);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--bg-tertiary);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--bg-tertiary);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--bg-secondary);
+
+  --dv-activegroup-visiblepanel-tab-color: var(--accent-primary);
+  --dv-activegroup-hiddenpanel-tab-color: var(--text-secondary);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--text-secondary);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--text-disabled);
+
+  --dv-group-view-background-color: var(--bg-primary);
+  --dv-separator-color: var(--ui-border-subtle);
+  --dv-separator-border: transparent;
+
+  --dv-pane-header-background-color: var(--bg-secondary);
+  --dv-paneview-header-border-color: var(--ui-border-subtle);
+  --dv-paneview-active-outline-color: var(--accent-primary);
+
+  --dv-tabs-and-actions-container-background-color: var(--bg-secondary);
+  --dv-tab-background-color: var(--bg-tertiary);
+  --dv-tab-color: var(--text-secondary);
+  --dv-tab-divider-color: var(--ui-border-subtle);
+  --dv-icon-hover-background-color: var(--ui-bg-hover-strong);
+}
+
+.dockview-theme-custom .dv-tab {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 0 24px;
+  color: var(--text-disabled);
+  background: transparent;
+  border-radius: 12px 12px 0 0;
+  margin-top: 8px;
+  margin-left: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dockview-theme-custom .dv-tab.dv-active-tab {
+  color: var(--accent-primary);
+  background: var(--ui-bg-subtle);
+  box-shadow: inset 0 2px 0 var(--accent-primary);
+}
+
+.dockview-theme-custom .dv-pane-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--ui-border-subtle);
+  padding: 8px 16px;
+}
+
+.dockview-theme-custom .dv-tab:hover:not(.dv-active-tab) {
+  color: var(--text-primary);
+  background: var(--ui-bg-hover-strong);
+}
+
+.dockview-theme-custom .dv-tabs-and-actions-container {
+  height: 44px;
+  padding-right: 8px;
+  border-bottom: 1px solid var(--ui-border-subtle);
+}
+
+.dockview-theme-custom .dv-actions-container .dv-action {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.dockview-theme-custom .dv-actions-container .dv-action:hover {
+  color: var(--accent-primary);
+}

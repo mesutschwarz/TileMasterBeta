@@ -10,7 +10,7 @@
  * ── What does NOT belong here ────────────────────────────────────────────────
  *  • Visual layout constants  →  live in each component
  *  • Animation timing         →  loading/useLoadingProgress.ts
- *  • Theme colours            →  theme/themeRegistry.ts
+ *  • Theme colours            →  theme/theme.presets.ts
  *
  * Every other file in the project must import from here instead of using
  * hard-coded string literals for any of the values below.
