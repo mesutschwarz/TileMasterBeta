@@ -71,10 +71,6 @@ interface EditorState {
     sidebarVisible: boolean
     themeId: string
 
-    // Canvas State
-    canvasScale: number
-    canvasPan: { x: number, y: number }
-
     // Grid Settings
     gridSettings: GridSettings
     mapGridSettings: GridSettings
@@ -108,8 +104,6 @@ interface EditorState {
     toggleGrid: () => void
     toggleMapGrid: () => void
 
-    setCanvasScale: (scale: number) => void
-    setCanvasPan: (pan: { x: number, y: number }) => void
     updateGridSettings: (settings: Partial<GridSettings>) => void
     updateMapGridSettings: (settings: Partial<GridSettings>) => void
     setDrawingToolbarDock: (dock: EditorState['drawingToolbarDock']) => void
@@ -136,10 +130,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     selectedCollisionId: 1,
     selectedObjectId: 1,
 
-    canvasScale: 400,
     zoom: 32,
     mapZoom: 2,
-    canvasPan: { x: 0, y: 0 },
 
     gridSettings: saved.gridSettings ?? { ...defaultSettings.gridSettings },
     mapGridSettings: saved.mapGridSettings ?? { ...defaultSettings.mapGridSettings },
@@ -167,8 +159,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
     toggleMapGrid: () => set((state) => ({ showMapGrid: !state.showMapGrid })),
 
-    setCanvasScale: (canvasScale) => set({ canvasScale }),
-    setCanvasPan: (canvasPan) => set({ canvasPan }),
     updateGridSettings: (settings) => set((state) => {
         const gridSettings = { ...state.gridSettings, ...settings }
         saveSettings({ themeId: state.themeId, gridSettings, mapGridSettings: state.mapGridSettings, drawingToolbarDock: state.drawingToolbarDock, paletteDock: state.paletteDock })

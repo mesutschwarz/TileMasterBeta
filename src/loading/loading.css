@@ -1,0 +1,154 @@
+/* ============================================================
+   TileMaster — Loading Screen
+   All animations and styles for the startup loading experience.
+   Edit this file to customize timing, easing, and motion.
+   ============================================================ */
+
+/* --- Entry & Exit --- */
+
+@keyframes ls-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes ls-fade-out {
+    from { opacity: 1; transform: scale(1);    filter: blur(0px);   }
+    to   { opacity: 0; transform: scale(1.03); filter: blur(4px);   }
+}
+
+/* --- Logo icon tiles --- */
+
+@keyframes ls-tile-enter {
+    from { opacity: 0; transform: scale(0.72) rotate(-6deg); }
+    to   { opacity: 1; transform: scale(1)    rotate(0deg);  }
+}
+
+@keyframes ls-tile-float {
+    0%,  100% { transform: translateY(0px);  }
+    50%        { transform: translateY(-5px); }
+}
+
+/* --- Shimmer sweep on the progress bar fill --- */
+
+@keyframes ls-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(350%);  }
+}
+
+/* --- Staggered wordmark characters --- */
+
+@keyframes ls-word-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0px);  }
+}
+
+/* ============================================================
+   Root screen container
+   ============================================================ */
+
+.ls-screen {
+    position:         fixed;
+    inset:            0;
+    z-index:          9999;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    background:       var(--app-background, #09090b);
+    background-size:  300% 300%;
+    /* Reuse the same ambient gradient animation from index.css */
+    animation:        gradientAnimation 24s ease infinite,
+                      ls-fade-in 0.35s ease forwards;
+}
+
+.ls-screen.ls-exiting {
+    animation: ls-fade-out 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    pointer-events: none;
+}
+
+/* ============================================================
+   Logo icon
+   ============================================================ */
+
+.ls-icon {
+    animation: ls-tile-enter 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+/* Gentle float while loading (resolves instantly when done) */
+.ls-icon.ls-floating {
+    animation:
+        ls-tile-enter 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both,
+        ls-tile-float 3s ease-in-out 0.8s infinite;
+}
+
+/* Individual tile stagger */
+.ls-tile {
+    transform-origin: center center;
+}
+
+.ls-tile:nth-child(1) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both; }
+.ls-tile:nth-child(2) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s both; }
+.ls-tile:nth-child(3) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.19s both; }
+.ls-tile:nth-child(4) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s both; }
+.ls-tile:nth-child(5) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.00s both; }
+.ls-tile:nth-child(6) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both; }
+.ls-tile:nth-child(7) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.17s both; }
+.ls-tile:nth-child(8) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.10s both; }
+.ls-tile:nth-child(9) { animation: ls-tile-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s both; }
+
+/* ============================================================
+   Wordmark & subtitle
+   ============================================================ */
+
+.ls-wordmark {
+    animation: ls-word-in 0.45s ease 0.32s both;
+}
+
+.ls-subtitle {
+    animation: ls-word-in 0.45s ease 0.44s both;
+}
+
+/* ============================================================
+   Progress bar container
+   ============================================================ */
+
+.ls-progress-wrap {
+    animation: ls-word-in 0.45s ease 0.5s both;
+}
+
+.ls-progress-track {
+    width:            100%;
+    height:           3px;
+    border-radius:    999px;
+    background:       var(--ui-border-subtle, rgba(255,255,255,0.08));
+    overflow:         hidden;
+    position:         relative;
+}
+
+.ls-progress-fill {
+    height:           100%;
+    border-radius:    999px;
+    background:       var(--accent-primary, #ec4899);
+    /* Width is driven inline via React state */
+    transition:       width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    position:         relative;
+    overflow:         hidden;
+}
+
+/* Subtle light sweep over the fill */
+.ls-shimmer {
+    position:  absolute;
+    top:       0;
+    bottom:    0;
+    width:     28%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+    );
+    animation: ls-shimmer 1.6s ease-in-out infinite;
+}
+
+.ls-status {
+    animation: ls-word-in 0.45s ease 0.55s both;
+}
