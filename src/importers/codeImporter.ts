@@ -28,13 +28,23 @@ const parseBytes = (dataStr: string): number[] => {
 
 /**
  * Extract per-tile names from TileMaster-style comments inside a tile array body.
- * Format: /* Tile 0xNN: TileName * /
+ * Formats:
+ *  - /* Tile #NN: TileName * /
+ *  - /* Tile 0xNN: TileName * / (legacy)
  */
 const extractTileNames = (dataStr: string): Map<number, string> => {
     const names = new Map<number, string>()
-    const re = /\/\*\s*Tile\s+0x([0-9A-Fa-f]+):\s*(.+?)\s*\*\//g
+    const decimalRe = /\/\*\s*Tile\s+#(\d+):\s*(.+?)\s*\*\//g
+    const hexRe = /\/\*\s*Tile\s+0x([0-9A-Fa-f]+):\s*(.+?)\s*\*\//g
     let m
-    while ((m = re.exec(dataStr)) !== null) {
+
+    while ((m = decimalRe.exec(dataStr)) !== null) {
+        const idx = parseInt(m[1], 10)
+        const name = m[2].trim()
+        if (name) names.set(idx, name)
+    }
+
+    while ((m = hexRe.exec(dataStr)) !== null) {
         const idx = parseInt(m[1], 16)
         const name = m[2].trim()
         if (name) names.set(idx, name)

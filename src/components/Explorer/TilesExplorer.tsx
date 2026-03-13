@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Upload, Copy, Scissors, Clipboard, Eraser, Trash2, MousePointer2, Info } from 'lucide-react'
+import { Plus, Upload, Copy, Scissors, Clipboard, Eraser, Trash2, MousePointer2, Info, Layers } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useProjectStore } from '../../stores/projectStore'
 import { useEditorStore } from '../../stores/editorStore'
@@ -11,6 +11,7 @@ import { TileMap } from '../../types/map'
 import { Tooltip } from '../common/Tooltip'
 import { ContextMenu, ContextMenuEntry } from '../common/ContextMenu'
 import { Modal } from '../common/Modal'
+import { formatTileNumber } from '../../utils/tileLabels'
 
 const TileThumbnail: React.FC<{ tile: Tile, palette: string[] }> = ({ tile, palette }) => {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
@@ -51,13 +52,16 @@ export const TilesExplorer: React.FC = () => {
     const { setView } = useEditorStore()
 
     const [importFile, setImportFile] = React.useState<File | null>(null)
-    const [tileScale, setTileScale] = React.useState(8)
+    const [tileScale, setTileScale] = React.useState(6)
     const [contextMenu, setContextMenu] = React.useState<{ tileId: string, x: number, y: number } | null>(null)
     const [infoTileId, setInfoTileId] = React.useState<string | null>(null)
     const [infoTileName, setInfoTileName] = React.useState('')
     const [draggedTileIndex, setDraggedTileIndex] = React.useState<number | null>(null)
     const [dragOverIndex, setDragOverIndex] = React.useState<number | null>(null)
     const [draggableTileId, setDraggableTileId] = React.useState<string | null>(null)
+
+    const tilePreviewWidth = React.useMemo(() => Math.max(8, platform.tileWidth * tileScale), [platform.tileWidth, tileScale])
+    const tilePreviewHeight = React.useMemo(() => Math.max(8, platform.tileHeight * tileScale), [platform.tileHeight, tileScale])
 
     const issues = React.useMemo(() => validateProject(platform, tileset, maps), [platform, tileset, maps])
     const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -191,6 +195,13 @@ export const TilesExplorer: React.FC = () => {
         ]
     }, [contextMenu, clipboard, cutTile, copyTile, pasteTile, duplicateTile, clearTile, deleteTile])
 
+    const handleTileScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(e.target.value)
+        if (!Number.isFinite(value)) return
+        const clamped = Math.min(32, Math.max(4, Math.round(value)))
+        setTileScale(clamped)
+    }
+
     return (
         <div className="h-full flex flex-col min-h-0 overflow-hidden">
             <input
@@ -211,26 +222,26 @@ export const TilesExplorer: React.FC = () => {
             )}
 
             {/* Header */}
-            <div className="w-full flex items-center justify-between px-4 py-2 shrink-0 border-b border-ui-border-subtle/50 bg-bg-tertiary/40 backdrop-blur-md">
-                <span className="text-[11px] font-black tracking-widest text-text-primary">TILES</span>
+            <div className="w-full flex items-center justify-between px-4 py-3 shrink-0 border-b border-ui-border-subtle bg-bg-primary">
+                <span className="text-[10px] font-semibold tracking-[0.2em] text-text-secondary uppercase">Tiles Explorer</span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={createNewTile}
-                        className="p-1.5 rounded-lg transition-all action-button hover:bg-accent-primary/20 hover:text-accent-primary"
+                        className="flex h-6 w-6 items-center justify-center rounded bg-accent-primary text-white hover:bg-accent-primary/80 transition-colors"
                         title="Add Tile"
                     >
                         <Plus size={14} strokeWidth={2.5} />
                     </button>
                     <button
                         onClick={handleCleanupTiles}
-                        className="p-1.5 rounded-lg transition-all action-button hover:bg-accent-secondary/20 hover:text-accent-secondary"
+                        className="p-1.5 rounded-md transition-all action-button hover:bg-ui-active hover:text-text-primary"
                         title="Cleanup duplicates"
                     >
                         <Eraser size={14} strokeWidth={2.5} />
                     </button>
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="p-1.5 rounded-lg transition-all action-button hover:bg-accent-secondary/20 hover:text-accent-secondary"
+                        className="p-1.5 rounded-md transition-all action-button hover:bg-ui-active hover:text-text-primary"
                         title="Import PNG"
                     >
                         <Upload size={14} strokeWidth={2.5} />
@@ -242,13 +253,13 @@ export const TilesExplorer: React.FC = () => {
             <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
                 <div className="p-3">
                     <div
-                        className="flex flex-wrap gap-2"
+                        className="flex flex-wrap content-start gap-3"
                         onDragOver={(e) => e.preventDefault()}
                     >
                         {tileset.tiles.map((tile, index) => {
                             const tileUsage = maps.reduce((count, map) => {
                                 return count + map.layers.reduce((layerCount, layer) => {
-                                    return layerCount + layer.data.filter(idx => idx === tileset.tiles.indexOf(tile)).length
+                                    return layerCount + layer.data.filter(idx => idx === index).length
                                 }, 0)
                             }, 0)
 
@@ -271,13 +282,13 @@ export const TilesExplorer: React.FC = () => {
                                     key={tile.id}
                                     content={
                                         <div className="tile-tooltip">
-                                            <div className="tile-tooltip-line">Tile {index}</div>
-                                            <div className="tile-tooltip-line tile-tooltip-meta">Tile 0x{index.toString(16).toUpperCase()}</div>
+                                            <div className="tile-tooltip-line">{formatTileNumber(index)}</div>
                                             {tile.name?.trim() && (
                                                 <div className="tile-tooltip-name">{tile.name.trim()}</div>
                                             )}
-                                            <div className="tile-tooltip-line">
-                                                {tileUsage} usage{tileUsage === 1 ? '' : 's'}
+                                            <div className="tile-tooltip-line flex items-center gap-1">
+                                                <Layers size={11} className="text-text-secondary" />
+                                                <span className="tabular-nums">{tileUsage}</span>
                                             </div>
                                             {hasError && (
                                                 <div className="tile-tooltip-line tile-tooltip-error">
@@ -322,19 +333,22 @@ export const TilesExplorer: React.FC = () => {
                                             })
                                             setDraggableTileId(null)
                                         }}
-                                        style={{ width: `${tile.width * tileScale}px`, height: `${tile.height * tileScale}px` }}
+                                        style={{
+                                            width: `${tile.width * tileScale}px`,
+                                            height: `${tile.height * tileScale}px`
+                                        }}
                                         className={clsx(
-                                            "rounded-xl overflow-hidden transition-all duration-300 relative shrink-0 shadow-sm",
+                                            "rounded border overflow-hidden transition-all duration-200 relative shrink-0 p-1",
                                             selectedTileId === tile.id
-                                                ? "ring-[3px] ring-accent-primary border-transparent bg-accent-primary/10 shadow-[0_0_20px_rgba(var(--accent-primary-rgb),0.5)] scale-105 z-10"
+                                                ? "border-accent-primary bg-accent-primary/10 shadow-[0_0_0_1px_rgba(var(--accent-primary-rgb),0.5)] z-10"
                                                 : hasError
-                                                    ? "ring-2 ring-ui-danger bg-ui-danger/10 shadow-[0_0_15px_rgba(var(--error-rgb),0.3)]"
-                                                    : "ring-1 ring-ui-border-strong bg-ui-bg-subtle hover:ring-2 hover:ring-ui-border-strong hover:bg-ui-bg-hover hover:-translate-y-0.5 hover:shadow-xl",
-                                            dragOverIndex === index && draggedTileIndex !== index && "ring-4 ring-accent-secondary border-transparent scale-110 z-20",
-                                            draggableTileId === tile.id && "cursor-move ring-4 ring-accent-secondary opacity-50 scale-90"
+                                                    ? "border-ui-danger bg-ui-danger/10"
+                                                    : "border-ui-border-subtle bg-bg-secondary hover:border-ui-border-strong hover:bg-ui-bg-hover",
+                                            dragOverIndex === index && draggedTileIndex !== index && "border-accent-secondary z-20",
+                                            draggableTileId === tile.id && "cursor-move border-accent-secondary opacity-50"
                                         )}
                                     >
-                                        <div className="w-full h-full relative pointer-events-none p-0.5">
+                                        <div className="w-full h-full relative pointer-events-none rounded-sm overflow-hidden">
                                             <TileThumbnail tile={tile} palette={platform.defaultPalette} />
                                         </div>
 
@@ -350,8 +364,11 @@ export const TilesExplorer: React.FC = () => {
                         <button
                             onClick={createNewTile}
                             disabled={tileset.tiles.length >= platform.maxTiles}
-                            style={{ width: `${platform.tileWidth * tileScale}px`, height: `${platform.tileHeight * tileScale}px` }}
-                            className="rounded-xl border-[3px] border-dashed border-ui-border-strong bg-transparent flex flex-col items-center justify-center gap-2 transition-all hover:border-accent-primary hover:bg-accent-primary/10 group disabled:opacity-30 disabled:cursor-not-allowed shrink-0 shadow-inner"
+                            style={{
+                                width: `${tilePreviewWidth}px`,
+                                height: `${tilePreviewHeight}px`
+                            }}
+                            className="rounded border-2 border-dashed border-ui-border-strong bg-transparent flex flex-col items-center justify-center gap-2 transition-all hover:border-accent-primary hover:bg-accent-primary/10 group disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                         >
                             <Plus size={24} strokeWidth={2.5} className="text-ui-border-strong group-hover:text-accent-primary transition-colors hover:scale-110" />
                         </button>
@@ -366,7 +383,7 @@ export const TilesExplorer: React.FC = () => {
             </div>
 
             {/* Tile size slider — pinned to bottom */}
-            <div className="h-10 px-4 flex items-center gap-3 shrink-0 border-t border-ui-border-subtle/50 bg-bg-tertiary/40">
+            <div className="h-10 px-4 flex items-center gap-3 shrink-0 border-t border-ui-border-subtle bg-bg-primary">
                 <span className="text-[9px] font-bold tracking-wider text-text-disabled uppercase whitespace-nowrap">Size</span>
                 <input
                     type="range"
@@ -374,10 +391,10 @@ export const TilesExplorer: React.FC = () => {
                     max="32"
                     step="1"
                     value={tileScale}
-                    onChange={(e) => setTileScale(parseInt(e.target.value))}
+                    onChange={handleTileScaleChange}
                     className="flex-1 h-1 rounded-full appearance-none cursor-pointer bg-ui-bg-subtle accent-accent-primary"
                 />
-                <span className="text-[10px] font-mono w-8 text-right text-text-disabled font-bold tabular-nums">{tileScale}x</span>
+                <span className="text-[10px] font-mono min-w-[72px] text-right text-text-disabled font-bold tabular-nums">{tilePreviewWidth}x{tilePreviewHeight}</span>
             </div>
 
             <ContextMenu
@@ -398,7 +415,7 @@ export const TilesExplorer: React.FC = () => {
                     <>
                         <button
                             onClick={closeInfoDialog}
-                            className="px-4 py-2 rounded-lg bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-400 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
+                            className="px-4 py-2 rounded-lg bg-bg-tertiary border border-ui-border text-[10px] font-bold text-gray-400 hover:text-white hover:border-ui-border-strong transition-colors uppercase tracking-wider"
                         >
                             Cancel
                         </button>

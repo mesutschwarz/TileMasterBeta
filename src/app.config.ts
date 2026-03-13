@@ -54,10 +54,9 @@ export const STORAGE_KEYS = {
     onboarding: 'tilemaster_onboarding_v1',
 } as const
 
-// ── Export defaults ───────────────────────────────────────────────────────────
+// ── Project defaults ──────────────────────────────────────────────────────────
 
 /**
- * Default project/file-name stem used in export dialogs when the user
- * has not set a custom project name.
+ * Default project name used when a project has not been renamed yet.
  */
-export const DEFAULT_EXPORT_PROJECT_NAME = 'tilemaster_assets'
+export const DEFAULT_PROJECT_NAME = 'Project Name'

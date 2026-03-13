@@ -29,7 +29,7 @@ export const ActivityBar: React.FC = () => {
                 <button
                     onClick={() => handleViewClick(id)}
                     className={clsx(
-                        "w-full aspect-square flex items-center justify-center transition-all relative group activity-icon",
+                        "h-10 w-10 mx-auto flex items-center justify-center transition-all relative group activity-icon",
                         active && "active"
                     )}
                 >
@@ -43,8 +43,8 @@ export const ActivityBar: React.FC = () => {
     }
 
     return (
-        <div className="activity-bar glass-panel rounded-3xl h-full flex flex-col items-center py-4 shrink-0 z-50 shadow-lg">
-            <div className="flex flex-col gap-3 w-full px-2">
+        <div className="activity-bar h-full flex flex-col items-center shrink-0 z-50">
+            <div className="flex flex-col gap-2 w-full px-2">
                 <NavButton id="tile" icon={<Grid />} label="Tiles Explorer" shortcut="T" />
                 <NavButton id="map" icon={<MapIcon />} label="Map Explorer" shortcut="V" />
             </div>
@@ -53,7 +53,7 @@ export const ActivityBar: React.FC = () => {
                 <Tooltip content="Settings" position="right" shortcut="Ctrl+,">
                     <button
                         onClick={() => setShowSettings(true)}
-                        className="w-full aspect-square flex items-center justify-center rounded-xl transition-colors activity-icon"
+                        className="h-10 w-10 mx-auto flex items-center justify-center rounded-xl transition-colors activity-icon"
                     >
                         <Settings size={22} strokeWidth={1.5} />
                     </button>

@@ -63,13 +63,13 @@ export const Modal: React.FC<ModalProps> = ({
             {/* Modal Container */}
             <div
                 className={clsx(
-                    "relative w-full bg-bg-secondary border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+                    "relative w-full bg-bg-secondary border border-ui-border-strong rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200",
                     maxWidthClasses[maxWidth]
                 )}
                 style={{ maxHeight }}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-bg-tertiary/30">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-ui-border bg-bg-tertiary/30">
                     <div className="flex items-center gap-3">
                         {icon && <div className="text-accent-primary">{icon}</div>}
                         <h2 className="text-sm font-bold uppercase tracking-widest text-white">{title}</h2>
@@ -89,7 +89,7 @@ export const Modal: React.FC<ModalProps> = ({
 
                 {/* Footer */}
                 {footer && (
-                    <div className="px-6 py-4 bg-bg-tertiary/20 border-t border-white/5 flex items-center justify-end gap-3">
+                    <div className="px-6 py-4 bg-bg-tertiary/20 border-t border-ui-border flex items-center justify-end gap-3">
                         {footer}
                     </div>
                 )}

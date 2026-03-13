@@ -20,6 +20,7 @@ export interface AppThemeColors {
     uiBgHover: string
     uiBgHoverStrong: string
     uiBgSubtle: string
+    uiTabContainerBg: string
     uiInputBg: string
     uiInputBorder: string
     uiBorderSubtle: string

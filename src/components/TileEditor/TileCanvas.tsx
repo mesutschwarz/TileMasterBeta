@@ -4,6 +4,7 @@ import { useEditorStore } from '../../stores/editorStore'
 import * as Draw from '../../utils/drawingAlgorithms'
 import { getThemeCanvasColors } from '../../utils/themeColors'
 import { CanvasViewport } from '../common/CanvasViewport'
+import { formatTileLabel } from '../../utils/tileLabels'
 
 export const TileCanvas: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -37,6 +38,11 @@ export const TileCanvas: React.FC = () => {
     const strokeChangedRef = useRef(false)
 
     const selectedTile = tileset.tiles.find(t => t.id === selectedTileId)
+    const selectedTileIndex = useMemo(() => tileset.tiles.findIndex(t => t.id === selectedTileId), [tileset.tiles, selectedTileId])
+    const selectedTileLabel = useMemo(() => {
+        if (selectedTileIndex < 0) return 'Tile #00'
+        return formatTileLabel(selectedTileIndex, selectedTile?.name)
+    }, [selectedTileIndex, selectedTile])
 
     const tileBitmap = useMemo(() => {
         if (!selectedTile || typeof document === 'undefined') return null
@@ -410,8 +416,8 @@ export const TileCanvas: React.FC = () => {
     const infoContent = (
         <div className="flex flex-col gap-1 p-1 min-w-[100px]">
             <div className="flex justify-between items-center gap-4">
-                <span className="text-gray-500 font-bold uppercase tracking-widest text-[8px]">Index</span>
-                <span className="text-gray-200 font-mono text-[10px]">{selectedTileId}</span>
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-[8px]">Tile</span>
+                <span className="text-gray-200 font-mono text-[10px]">{selectedTileLabel}</span>
             </div>
             <div className="h-px bg-white/5 my-0.5" />
             <div className="flex justify-between items-center gap-4">

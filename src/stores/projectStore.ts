@@ -3,7 +3,8 @@ import { PlatformId, PlatformSpec } from '../types/platform'
 import { Tile, Tileset } from '../types/tile'
 import { TileMap, MapLayer, LayerType } from '../types/map'
 import { PLATFORMS } from '../core/platforms'
-import { STORAGE_KEYS } from '../app.config'
+import { DEFAULT_PROJECT_NAME, STORAGE_KEYS } from '../app.config'
+import { normalizeProjectName, toProjectFileStem } from '../utils/projectName'
 
 const PLATFORM_KEY = STORAGE_KEYS.platform
 
@@ -46,6 +47,7 @@ function createInitialState(platform: PlatformSpec) {
 
 interface ProjectState {
     platform: PlatformSpec
+    projectName: string
     tileset: Tileset
     maps: TileMap[]
     selectedTileId: string | null
@@ -64,6 +66,7 @@ interface ProjectState {
     undo: () => void
     redo: () => void
     setPlatform: (id: PlatformId, label?: string) => void
+    setProjectName: (name: string, label?: string) => void
     updatePaletteColor: (index: number, color: string, label?: string) => void
     addTile: (tile: Tile, label?: string) => void
     addTiles: (tiles: Tile[], label?: string) => void
@@ -102,6 +105,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
 
     return {
         platform: initialPlatform,
+        projectName: DEFAULT_PROJECT_NAME,
         tileset: { id: 'default', name: 'Main Tileset', tiles: [defaultTile] },
         maps: [defaultMap],
         selectedTileId: defaultTile.id,
@@ -114,8 +118,8 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         clipboard: null,
 
         recordHistory: (label?: string) => {
-            const { platform, tileset, maps, history, historyIndex } = get()
-            const snapshot = JSON.stringify({ platform, tileset, maps })
+            const { platform, projectName, tileset, maps, history, historyIndex } = get()
+            const snapshot = JSON.stringify({ platform, projectName, tileset, maps })
             const ts = Date.now()
 
             // Don't record if same as last
@@ -160,8 +164,8 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         },
 
         recordHistoryIfChanged: (label) => {
-            const { platform, tileset, maps, history, historyIndex } = get()
-            const snapshot = JSON.stringify({ platform, tileset, maps })
+            const { platform, projectName, tileset, maps, history, historyIndex } = get()
+            const snapshot = JSON.stringify({ platform, projectName, tileset, maps })
             if (historyIndex >= 0 && history[historyIndex].snapshot === snapshot) return
             get().recordHistory(label)
         },
@@ -198,6 +202,14 @@ export const useProjectStore = create<ProjectState>((set, get) => {
             try { localStorage.setItem(PLATFORM_KEY, id) } catch { /* unavailable */ }
             set({ platform: PLATFORMS[id] })
             get().recordHistory(label ?? 'Platform: Change')
+        },
+
+        setProjectName: (name, label) => {
+            const normalized = normalizeProjectName(name)
+            const previous = get().projectName
+            if (normalized === previous) return
+            set({ projectName: normalized })
+            get().recordHistory(label ?? 'Project: Rename')
         },
 
         updatePaletteColor: (index, color, label) => {
@@ -691,10 +703,11 @@ export const useProjectStore = create<ProjectState>((set, get) => {
         },
 
         saveProject: () => {
-            const { platform, tileset, maps } = get()
+            const { platform, projectName, tileset, maps } = get()
             const project = {
                 version: 1,
                 platformId: platform.id,
+                projectName,
                 tileset,
                 maps,
             }
@@ -703,7 +716,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = `${tileset.name || 'project'}.tmproj`
+            a.download = `${toProjectFileStem(projectName)}.tmproj`
             a.click()
             URL.revokeObjectURL(url)
         },
@@ -728,6 +741,7 @@ export const useProjectStore = create<ProjectState>((set, get) => {
                     const platform = PLATFORMS[platformId]
                     set({
                         platform,
+                        projectName: normalizeProjectName(project.projectName),
                         tileset: project.tileset,
                         maps: project.maps,
                         selectedTileId: project.tileset.tiles[0]?.id ?? null,

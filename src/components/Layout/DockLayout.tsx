@@ -6,6 +6,7 @@ import { DrawingToolbar } from '../TileEditor/DrawingToolbar'
 import { PaletteToolbar } from '../TileEditor/PaletteToolbar'
 import { useEditorStore } from '../../stores/editorStore'
 import { useProjectStore } from '../../stores/projectStore'
+import { formatTileLabel } from '../../utils/tileLabels'
 
 
 const TileEditorView: React.FC<IDockviewPanelProps> = () => {
@@ -85,17 +86,17 @@ export const DockLayout: React.FC = () => {
     const tileIndex = React.useMemo(() => tileset.tiles.findIndex(t => t.id === selectedTileId), [tileset.tiles, selectedTileId])
     const selectedTile = React.useMemo(() => tileset.tiles.find(t => t.id === selectedTileId) ?? null, [tileset.tiles, selectedTileId])
     const tileTitle = React.useMemo(() => {
-        const indexLabel = tileIndex >= 0 ? tileIndex : 0
-        const name = selectedTile?.name?.trim()
-        return name ? `Tile Editor #${indexLabel} (${name})` : `Tile Editor #${indexLabel}`
+        if (tileIndex < 0) {
+            return 'Tile Editor'
+        }
+
+        return formatTileLabel(tileIndex, selectedTile?.name)
     }, [tileIndex, selectedTile])
 
     const mapIndex = React.useMemo(() => maps.findIndex(m => m.id === selectedMapId), [maps, selectedMapId])
     const selectedMap = React.useMemo(() => maps.find(m => m.id === selectedMapId) ?? null, [maps, selectedMapId])
     const mapTitle = React.useMemo(() => {
-        const indexLabel = mapIndex >= 0 ? mapIndex : 0
-        const name = selectedMap?.name?.trim() || 'Untitled'
-        return `Map Editor #${indexLabel} (${name})`
+        return selectedMap?.name?.trim() ? `Map: ${selectedMap.name.trim()}` : 'Map Editor'
     }, [mapIndex, selectedMap])
 
     const onReady = (event: DockviewReadyEvent) => {
@@ -133,13 +134,22 @@ export const DockLayout: React.FC = () => {
         apiRef.current.getPanel('mapEditor')?.setTitle?.(mapTitle)
     }, [tileTitle, mapTitle])
 
+    const dockviewTheme = React.useMemo(
+        () => ({
+            name: 'tilemaster',
+            className: 'dockview-theme-custom',
+        }),
+        []
+    )
+
 
     return (
-        <div className="h-full w-full dockview-theme-custom bg-bg-primary">
+        <div className="h-full w-full bg-bg-primary">
             <DockviewReact
                 components={componentMap}
                 onReady={onReady}
                 disableAutoResizing={false}
+                theme={dockviewTheme}
             />
         </div>
     )

@@ -36,7 +36,7 @@ export const ToolBar: React.FC<ToolBarProps> = ({ horizontal = false }) => {
     const orientation = horizontal ? 'horizontal' : 'vertical'
 
     return (
-        <div className={horizontal ? "flex items-center gap-2 p-1.5 min-h-0 min-w-0 flex-row flex-wrap" : "flex items-center gap-2 p-1.5 min-h-0 min-w-0 flex-col flex-wrap content-start"}>
+        <div className={horizontal ? "flex items-center gap-1 p-1 min-h-0 min-w-0 flex-row flex-wrap" : "flex items-center gap-1 p-1 min-h-0 min-w-0 flex-col flex-wrap content-start"}>
             {/* Draw Tools */}
             <ToolbarGroup orientation={orientation}>
                 <Tooltip content="Pencil Tool" shortcut="P" position={horizontal ? "bottom" : "right"}>
@@ -108,7 +108,7 @@ export const ToolBar: React.FC<ToolBarProps> = ({ horizontal = false }) => {
                         <Minus size={16} />
                     </ToolButton>
                 </Tooltip>
-                <div className="w-9 h-9 flex items-center justify-center rounded-lg text-[10px] text-gray-300 bg-bg-tertiary border border-white/10">
+                <div className="w-8 h-8 flex items-center justify-center rounded-md text-[10px] text-text-secondary bg-bg-secondary border border-ui-border-subtle">
                     {brushSize}px
                 </div>
                 <Tooltip content="Increase Brush" shortcut="+" position={horizontal ? "bottom" : "right"}>

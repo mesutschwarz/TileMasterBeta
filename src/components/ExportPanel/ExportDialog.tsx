@@ -5,33 +5,42 @@ import { generateGbdkC, generateGbdkH, generateGbdkBin, GbdkExportOptions } from
 import { exportTilesetToPng, exportMapToPng } from '../../exporters/png/PngExporter'
 import { clsx } from 'clsx'
 import { Modal } from '../common/Modal'
-import { DEFAULT_EXPORT_PROJECT_NAME } from '../../app.config'
+import { toProjectFileStem, toSnakeCaseIdentifier } from '../../utils/projectName'
 
 type ExportTab = 'c' | 'h' | 'bin' | 'png'
 
 export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-    const { platform, tileset, maps, selectedMapId } = useProjectStore()
+    const { platform, projectName, setProjectName, tileset, maps, selectedMapId } = useProjectStore()
     const [activeTab, setActiveTab] = useState<ExportTab>('c')
     const [copied, setCopied] = useState(false)
     const [pngBlob, setPngBlob] = useState<Blob | null>(null)
     const [pngPreviewUrl, setPngPreviewUrl] = useState<string | null>(null)
     const [pngTarget, setPngTarget] = useState<'tileset' | 'map'>('tileset')
+    const [projectNameDraft, setProjectNameDraft] = useState(projectName)
 
-    const [options, setOptions] = useState<GbdkExportOptions>({
-        projectName: DEFAULT_EXPORT_PROJECT_NAME,
+    const [options, setOptions] = useState<Omit<GbdkExportOptions, 'projectName'>>({
         includeComments: true,
         exportAllLayers: true,
         useBank: undefined
     })
 
+    const exportOptions: GbdkExportOptions = {
+        ...options,
+        projectName,
+    }
+
     const selectedMap = maps.find(m => m.id === selectedMapId)
-    const cCode = generateGbdkC(platform, tileset, selectedMap, options)
-    const hCode = generateGbdkH(platform, tileset, selectedMap, options)
+    const cCode = generateGbdkC(platform, tileset, selectedMap, exportOptions)
+    const hCode = generateGbdkH(platform, tileset, selectedMap, exportOptions)
     const binData = generateGbdkBin(platform, tileset)
 
     useEffect(() => {
         if (activeTab === 'png') generatePng()
     }, [activeTab, pngTarget, tileset, selectedMap, platform])
+
+    useEffect(() => {
+        setProjectNameDraft(projectName)
+    }, [projectName])
 
     useEffect(() => {
         return () => {
@@ -65,6 +74,10 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         setTimeout(() => setCopied(false), 2000)
     }
 
+    const commitProjectName = () => {
+        setProjectName(projectNameDraft, 'Project: Rename')
+    }
+
     const downloadFile = (filename: string, content: string | Uint8Array | Blob, type: string) => {
         const blob = content instanceof Blob ? content : new Blob([content as any], { type })
         const url = URL.createObjectURL(blob)
@@ -76,12 +89,13 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     }
 
     const handleDownload = () => {
-        const safeName = options.projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase()
-        if (activeTab === 'c') downloadFile(`${safeName}.c`, cCode, 'text/plain')
-        if (activeTab === 'h') downloadFile(`${safeName}.h`, hCode, 'text/plain')
-        if (activeTab === 'bin') downloadFile(`${safeName}.bin`, binData, 'application/octet-stream')
+        const variableStem = toSnakeCaseIdentifier(projectName)
+        const projectFileStem = toProjectFileStem(projectName)
+        if (activeTab === 'c') downloadFile(`${variableStem}.c`, cCode, 'text/plain')
+        if (activeTab === 'h') downloadFile(`${variableStem}.h`, hCode, 'text/plain')
+        if (activeTab === 'bin') downloadFile(`${variableStem}.bin`, binData, 'application/octet-stream')
         if (activeTab === 'png' && pngBlob) {
-            downloadFile(`${safeName}_${pngTarget}.png`, pngBlob, 'image/png')
+            downloadFile(`${projectFileStem}.png`, pngBlob, 'image/png')
         }
     }
 
@@ -97,7 +111,7 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                     {(activeTab === 'c' || activeTab === 'h') && (
                         <button
                             onClick={handleCopy}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-tertiary border border-white/10 text-[10px] font-bold text-gray-400 hover:text-white hover:border-white/20 transition-all uppercase tracking-widest"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-tertiary border border-ui-border-strong text-[10px] font-bold text-gray-400 hover:text-white hover:border-ui-border-strong transition-all uppercase tracking-widest"
                         >
                             {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
                             {copied ? 'Copied' : 'Copy Code'}
@@ -115,19 +129,26 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         >
             <div className="flex flex-col lg:flex-row min-h-[500px]">
                 {/* Settings Sidebar */}
-                <div className="w-full lg:w-72 bg-bg-tertiary/20 border-b lg:border-b-0 lg:border-r border-white/5 p-8 space-y-8">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">
+                <div className="w-full lg:w-72 bg-bg-tertiary/20 border-b lg:border-b-0 lg:border-r border-ui-border p-8 space-y-8">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-ui-border pb-2">
                         <Settings size={12} /> Config
                     </div>
 
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Asset Name</label>
+                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Project Name</label>
                             <input
                                 type="text"
-                                value={options.projectName}
-                                onChange={(e) => setOptions({ ...options, projectName: e.target.value })}
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:border-accent-primary outline-none transition-colors font-mono"
+                                value={projectNameDraft}
+                                onChange={(e) => setProjectNameDraft(e.target.value)}
+                                onBlur={commitProjectName}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        commitProjectName()
+                                    }
+                                }}
+                                className="w-full bg-black/40 border border-ui-border-strong rounded-lg px-4 py-2.5 text-xs text-white focus:border-accent-primary outline-none transition-colors font-mono"
                             />
                         </div>
 
@@ -153,14 +174,14 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                             </button>
                         </div>
 
-                        <div className="space-y-2 border-t border-white/5 pt-6">
+                        <div className="space-y-2 border-t border-ui-border pt-6">
                             <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">ROM Bank</label>
                             <input
                                 type="number"
                                 placeholder="Auto"
                                 value={options.useBank ?? ''}
                                 onChange={(e) => setOptions({ ...options, useBank: e.target.value ? parseInt(e.target.value) : undefined })}
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:border-accent-primary outline-none transition-colors font-mono"
+                                className="w-full bg-black/40 border border-ui-border-strong rounded-lg px-4 py-2.5 text-xs text-white focus:border-accent-primary outline-none transition-colors font-mono"
                             />
                         </div>
                     </div>
@@ -168,7 +189,7 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
                 {/* Main Preview */}
                 <div className="flex-1 flex flex-col min-w-0 bg-black/40">
-                    <div className="flex border-b border-white/5 bg-bg-tertiary/10">
+                    <div className="flex border-b border-ui-border bg-bg-tertiary/10">
                         {[
                             { id: 'c', label: '.C Source', icon: FileCode },
                             { id: 'h', label: '.H Header', icon: FileType },
@@ -194,7 +215,7 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                     <div className="flex-1 overflow-hidden flex flex-col">
                         {activeTab === 'png' ? (
                             <div className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-300">
-                                <div className="p-4 bg-white/2 flex items-center gap-4 justify-center border-b border-white/5">
+                                <div className="p-4 bg-white/2 flex items-center gap-4 justify-center border-b border-ui-border">
                                     <button
                                         onClick={() => setPngTarget('tileset')}
                                         className={clsx(
@@ -217,7 +238,7 @@ export const ExportDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                                 </div>
                                 <div className="flex-1 flex items-center justify-center p-12 overflow-auto bg-checkered">
                                     {pngPreviewUrl ? (
-                                        <div className="shadow-preview-glow border border-white/10 rounded-lg overflow-hidden scale-[4] transition-transform origin-center">
+                                        <div className="shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[4] transition-transform origin-center">
                                             <img src={pngPreviewUrl} alt="Export Preview" className="pixelated" />
                                         </div>
                                     ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ChevronDown, Share2, HelpCircle, Settings as SettingsIcon, Save, FolderOpen } from 'lucide-react'
 import { useProjectStore } from '../../stores/projectStore'
 import { PLATFORMS } from '../../core/platforms'
@@ -12,20 +12,36 @@ import { FolderInput } from 'lucide-react'
 import { isCFile, importCode, CodeImportResult } from '../../importers/codeImporter'
 
 import { useEditorStore } from '../../stores/editorStore'
-import { themeEntries } from '../../theme/theme.catalog'
 import { ImportOptions, ImportResult } from '../../importers/pngImporter'
 import { TileMap } from '../../types/map'
+import { normalizeProjectName } from '../../utils/projectName'
 
 export const Header: React.FC = () => {
-    const { platform, setPlatform, addTiles, selectTile, cleanupTiles, saveProject, loadProject } = useProjectStore()
-    const { setView, setShowSettings, themeId, setThemeId } = useEditorStore()
+    const { platform, projectName, setProjectName, setPlatform, addTiles, selectTile, cleanupTiles, saveProject, loadProject } = useProjectStore()
+    const { setView, setShowSettings } = useEditorStore()
     const [showExport, setShowExport] = useState(false)
     const [showHelp, setShowHelp] = useState(false)
     const [importFile, setImportFile] = useState<File | null>(null)
     const [codeImportData, setCodeImportData] = useState<{ result: CodeImportResult; fileName: string } | null>(null)
     const [showPlatformMenu, setShowPlatformMenu] = useState(false)
+    const [isEditingProjectName, setIsEditingProjectName] = useState(false)
+    const [projectNameDraft, setProjectNameDraft] = useState(projectName)
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const platformMenuRef = React.useRef<HTMLDivElement>(null)
+    const projectNameInputRef = React.useRef<HTMLInputElement>(null)
+
+    React.useEffect(() => {
+        if (!isEditingProjectName) {
+            setProjectNameDraft(projectName)
+        }
+    }, [projectName, isEditingProjectName])
+
+    React.useEffect(() => {
+        if (isEditingProjectName) {
+            projectNameInputRef.current?.focus()
+            projectNameInputRef.current?.select()
+        }
+    }, [isEditingProjectName])
 
     React.useEffect(() => {
         if (!showPlatformMenu) return
@@ -176,8 +192,22 @@ export const Header: React.FC = () => {
         if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
+    const projectLabel = useMemo(() => normalizeProjectName(projectName), [projectName])
+
+    const commitProjectName = () => {
+        setProjectName(projectNameDraft, 'Project: Rename')
+        setIsEditingProjectName(false)
+    }
+
+    const cancelProjectNameEdit = () => {
+        setProjectNameDraft(projectLabel)
+        setIsEditingProjectName(false)
+    }
+
+    const navButtonClass = "flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium text-text-primary hover:bg-ui-bg-hover transition-colors"
+
     return (
-        <header className="h-16 glass-panel rounded-3xl px-6 flex items-center justify-between z-10 shrink-0 shadow-lg">
+        <header className="h-14 bg-bg-titlebar border-b border-ui-border-subtle px-4 flex items-center justify-between z-10 shrink-0">
             {showExport && <ExportDialog onClose={() => setShowExport(false)} />}
             {showHelp && <OnboardingModal onForceClose={() => setShowHelp(false)} forceOpen={true} />}
             {importFile && (
@@ -211,89 +241,100 @@ export const Header: React.FC = () => {
                 onChange={handleFileSelect}
             />
 
-            <div className="flex items-center gap-3">
-                <AppLogo size={28} />
-                <h1 style={{ margin: 0 }}>
-                    <AppWordmark fontSize="13px" fontWeight={800} letterSpacing="0.18em" style={{ textTransform: 'uppercase' }} />
-                </h1>
+            <div className="flex items-center gap-6 min-w-0">
+                <div className="flex items-center gap-2 text-accent-primary shrink-0">
+                    <AppLogo size={24} />
+                    <h1 style={{ margin: 0 }}>
+                        <AppWordmark fontSize="14px" fontWeight={700} letterSpacing="0" style={{ textTransform: 'none' }} />
+                    </h1>
+                </div>
+                <div className="h-6 w-px bg-accent-primary/20 shrink-0" />
+                <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-sm font-semibold text-text-secondary">Project Name:</span>
+                    {isEditingProjectName ? (
+                        <input
+                            ref={projectNameInputRef}
+                            type="text"
+                            value={projectNameDraft}
+                            onChange={(e) => setProjectNameDraft(e.target.value)}
+                            onBlur={commitProjectName}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    commitProjectName()
+                                }
+                                if (e.key === 'Escape') {
+                                    e.preventDefault()
+                                    cancelProjectNameEdit()
+                                }
+                            }}
+                            className="h-8 min-w-[180px] max-w-[320px] rounded border border-ui-border-strong bg-bg-secondary px-2.5 text-sm font-medium text-text-primary outline-none focus:border-accent-primary"
+                            aria-label="Project Name"
+                        />
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setIsEditingProjectName(true)}
+                            className="h-8 min-w-[180px] max-w-[320px] rounded border border-ui-border-subtle bg-bg-secondary/60 px-2.5 text-left text-sm font-medium text-text-primary truncate hover:border-ui-border-strong"
+                            title="Click to edit project name"
+                        >
+                            {projectLabel}
+                        </button>
+                    )}
+                </div>
             </div>
 
-            <div className="flex items-center gap-2">
-                <select
-                    value={themeId}
-                    onChange={(e) => setThemeId(e.target.value)}
-                    className="quick-theme-select text-[10px] font-bold uppercase tracking-wider rounded px-2 py-1 h-[26px]"
-                    aria-label="Theme"
-                >
-                    {themeEntries.map((theme) => (
-                        <option key={theme.id} value={theme.id}>
-                            {theme.label}
-                        </option>
-                    ))}
-                </select>
+            <div className="flex items-center gap-4 shrink-0">
+                <nav className="flex items-center gap-1">
+                    <button
+                        onClick={() => setShowHelp(true)}
+                        className={navButtonClass}
+                    >
+                        <HelpCircle size={14} />
+                        Help
+                    </button>
+                    <button
+                        onClick={saveProject}
+                        className={navButtonClass}
+                    >
+                        <Save size={14} />
+                        Save
+                    </button>
 
-                <button
-                    onClick={() => setShowHelp(true)}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-400 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
-                >
-                    <HelpCircle size={14} />
-                    Help
-                </button>
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className={navButtonClass}
+                    >
+                        <FolderInput size={14} />
+                        Import
+                    </button>
 
-                <button
-                    onClick={() => setShowSettings(true)}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-400 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
-                >
-                    <SettingsIcon size={14} />
-                    Settings
-                </button>
+                    <button
+                        onClick={() => setShowExport(true)}
+                        className={navButtonClass}
+                    >
+                        <Share2 size={14} />
+                        Export
+                    </button>
+                </nav>
 
-                <button
-                    onClick={saveProject}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
-                >
-                    <Save size={14} />
-                    Save
-                </button>
-
-                <button
-                    onClick={loadProject}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
-                >
-                    <FolderOpen size={14} />
-                    Load
-                </button>
-
-                <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:text-white hover:border-white/20 transition-colors uppercase tracking-wider"
-                >
-                    <FolderInput size={14} />
-                    Import
-                </button>
-
-                <button
-                    onClick={() => setShowExport(true)}
-                    className="flex items-center gap-2 px-3 py-1 rounded bg-accent-primary text-white text-[10px] font-bold hover:bg-accent-secondary transition-all shadow-lg shadow-accent-primary/20 uppercase tracking-wider"
-                >
-                    <Share2 size={14} />
-                    Export
-                </button>
+                <div className="h-6 w-px bg-accent-primary/20 shrink-0" />
 
                 <div className="relative" ref={platformMenuRef}>
                     <button
                         onClick={() => setShowPlatformMenu((open) => !open)}
-                        className="flex items-center gap-2 px-3 py-1 rounded bg-bg-tertiary border border-white/5 text-[10px] font-bold text-gray-300 hover:border-white/20 transition-colors uppercase tracking-wider"
+                        className="flex items-center gap-2 bg-accent-primary/20 rounded-lg px-3 py-1.5"
                         aria-haspopup="menu"
                         aria-expanded={showPlatformMenu}
                     >
-                        Target: <span className="text-accent-secondary">{platform.name}</span>
-                        <ChevronDown size={14} className="text-gray-500" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-accent-primary">Platform</span>
+                        <span className="text-xs font-bold text-text-primary">{platform.name}</span>
+                        <ChevronDown size={12} className="text-text-secondary" />
                     </button>
 
                     <div className={showPlatformMenu
-                        ? "absolute right-0 top-full mt-1 w-48 bg-bg-tertiary border border-white/10 rounded shadow-xl opacity-100 visible transition-all py-1 z-50"
-                        : "absolute right-0 top-full mt-1 w-48 bg-bg-tertiary border border-white/10 rounded shadow-xl opacity-0 invisible transition-all py-1 z-50"}
+                        ? "absolute right-0 top-full mt-1 w-48 bg-bg-secondary border border-ui-border-subtle rounded-md shadow-xl opacity-100 visible transition-all py-1 z-50"
+                        : "absolute right-0 top-full mt-1 w-48 bg-bg-secondary border border-ui-border-subtle rounded-md shadow-xl opacity-0 invisible transition-all py-1 z-50"}
                     >
                         {(Object.keys(PLATFORMS) as PlatformId[]).map((id) => (
                             <button
@@ -303,13 +344,29 @@ export const Header: React.FC = () => {
                                     setPlatform(id)
                                     setShowPlatformMenu(false)
                                 }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-wider"
+                                className="w-full px-4 py-2 text-left text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-ui-bg-hover transition-colors"
                             >
                                 {PLATFORMS[id].name}
                             </button>
                         ))}
                     </div>
                 </div>
+
+                <button
+                    onClick={loadProject}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary transition-colors border border-transparent hover:bg-ui-bg-hover"
+                    aria-label="Load project"
+                >
+                    <FolderOpen size={14} />
+                </button>
+
+                <button
+                    onClick={() => setShowSettings(true)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary hover:text-text-primary transition-colors border border-ui-border-subtle"
+                    aria-label="Settings"
+                >
+                    <SettingsIcon size={16} />
+                </button>
             </div>
         </header>
     )

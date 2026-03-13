@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--ui-border-subtle);
+  }
+
+  * {
+    --tw-ring-color: color-mix(in srgb, var(--ui-border-strong) 65%, transparent);
+  }
+}
+
 html,
 body,
 #root {
@@ -30,11 +42,12 @@ body,
 
 body {
   background: var(--app-background, var(--bg-primary));
-  background-size: 300% 300%;
-  animation: gradientAnimation 24s ease infinite;
+  background-size: cover;
   min-height: 100vh;
   color: var(--text-primary);
-  transition: color 0.3s ease;
+  transition: color 0.2s ease, background 0.2s ease;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
 }
 
 .pixelated {

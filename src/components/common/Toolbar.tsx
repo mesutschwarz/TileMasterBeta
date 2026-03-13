@@ -25,9 +25,9 @@ export const ToolButton: React.FC<ToolButtonProps> = ({
             onClick={onClick}
             disabled={disabled}
             className={clsx(
-                "w-9 h-9 flex items-center justify-center rounded-lg transition-all",
-                active ? "bg-accent-primary text-white shadow-lg" : "text-text-secondary hover:text-text-primary hover:bg-ui-hover",
-                intent === 'danger' && "hover:text-ui-danger hover:bg-red-400/5",
+                "w-8 h-8 flex items-center justify-center rounded-md transition-all",
+                active ? "bg-accent-primary/25 text-accent-secondary border border-accent-primary/60" : "text-text-secondary hover:text-text-primary hover:bg-ui-hover border border-transparent",
+                intent === 'danger' && "hover:text-ui-danger hover:bg-red-400/10",
                 disabled && "opacity-20",
                 className
             )}
@@ -55,7 +55,7 @@ export const ToolbarDivider: React.FC<{ orientation: Orientation }> = ({ orienta
     <div
         className={clsx(
             "bg-ui-border-subtle shrink-0",
-            orientation === 'horizontal' ? "w-[1px] h-6 mx-1" : "h-[1px] w-6 my-1"
+            orientation === 'horizontal' ? "w-[1px] h-5 mx-1" : "h-[1px] w-5 my-1"
         )}
     />
 )
@@ -70,9 +70,9 @@ export const SwatchButton: React.FC<SwatchButtonProps> = ({ color, active, onCli
     <button
         onClick={onClick}
         className={clsx(
-            "w-6 h-6 rounded-md border transition-all",
+            "w-5 h-5 rounded-[3px] border transition-all",
             active
-                ? "border-accent-primary scale-110 shadow-lg shadow-accent-primary/50"
+                ? "border-accent-primary scale-110 shadow-lg shadow-accent-primary/40"
                 : "border-ui-border-subtle hover:border-ui-borderStrong"
         )}
         style={{ backgroundColor: color }}

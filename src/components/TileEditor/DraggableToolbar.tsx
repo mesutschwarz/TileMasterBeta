@@ -21,6 +21,8 @@ export const DraggableToolbar: React.FC<DraggableToolbarProps> = ({
     const [isDragging, setIsDragging] = useState(false)
     const dragStartOffset = useRef({ x: 0, y: 0 })
     const containerRef = useRef<HTMLDivElement>(null)
+    const isPaletteBottomBar = id === 'palette' && dock === 'bottom'
+    const showHandle = showTitle || dock === 'floating'
 
     const handleMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true)
@@ -73,31 +75,38 @@ export const DraggableToolbar: React.FC<DraggableToolbarProps> = ({
             style={dock === 'floating' ? { left: position.x, top: position.y } : {}}
             className={clsx(
                 "transition-[width,height,opacity] duration-200 select-none",
-                dock === 'floating' ? "fixed z-[100] bg-bg-secondary/95 backdrop-blur-md rounded-xl border border-ui-border-subtle shadow-2xl overflow-hidden" : "relative flex-shrink-0",
-                (dock === 'left' || dock === 'right') && "w-auto min-w-[3rem] h-full border-ui-border-subtle bg-bg-secondary",
+                dock === 'floating' ? "fixed z-[100] bg-bg-secondary rounded-md border border-ui-border-strong shadow-2xl overflow-hidden" : "relative flex-shrink-0",
+                (dock === 'left' || dock === 'right') && "w-12 h-full border-ui-border-subtle bg-black/10",
                 dock === 'left' && "border-r",
                 dock === 'right' && "border-l",
-                (dock === 'top' || dock === 'bottom') && "h-auto min-h-[3rem] w-full border-ui-border-subtle bg-bg-secondary",
+                (dock === 'top' || dock === 'bottom') && !isPaletteBottomBar && "h-auto min-h-[3rem] w-full border-ui-border-subtle bg-bg-primary",
+                isPaletteBottomBar && "absolute bottom-8 left-1/2 z-40 -translate-x-1/2 rounded-xl border border-ui-border-strong bg-bg-secondary/95 shadow-2xl",
                 dock === 'top' && "border-b",
-                dock === 'bottom' && "border-t",
+                dock === 'bottom' && !isPaletteBottomBar && "border-t",
                 isDragging && "opacity-70 cursor-grabbing !transition-none",
                 className
             )}
         >
             <div className="flex h-full w-full flex-col">
-                <div
-                    onMouseDown={handleMouseDown}
-                    className={clsx(
-                        "h-6 px-2 flex items-center justify-between border-b border-ui-border-subtle bg-bg-secondary text-[9px] uppercase tracking-[0.2em] text-text-secondary",
-                        isDragging ? "cursor-grabbing" : "cursor-grab"
-                    )}
-                >
-                    <span className="truncate">{showTitle ? title : ''}</span>
-                    <span className="text-text-disabled">⋮⋮</span>
-                </div>
+                {showHandle && (
+                    <div
+                        onMouseDown={handleMouseDown}
+                        className={clsx(
+                            "h-5 px-2 flex items-center justify-between border-b border-ui-border-subtle bg-bg-secondary text-[9px] uppercase tracking-[0.16em] text-text-secondary",
+                            isDragging ? "cursor-grabbing" : "cursor-grab"
+                        )}
+                    >
+                        <span className="truncate">{showTitle ? title : ''}</span>
+                        <span className="text-text-disabled">⋮⋮</span>
+                    </div>
+                )}
                 <div className={clsx(
                     "flex-1 flex",
-                    (dock === 'top' || dock === 'bottom') ? "flex-row px-2 items-center" : "flex-col py-2 items-center"
+                    isPaletteBottomBar
+                        ? "flex-row items-center px-4 py-3"
+                        : (dock === 'top' || dock === 'bottom')
+                            ? "flex-row px-2 items-center"
+                            : "flex-col py-2 items-center"
                 )}>
                     {children}
                 </div>

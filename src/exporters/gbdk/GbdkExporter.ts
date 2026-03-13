@@ -2,6 +2,8 @@ import { PlatformSpec } from '../../types/platform'
 import { Tileset, Tile } from '../../types/tile'
 import { TileMap } from '../../types/map'
 import { APP_NAME } from '../../app.config'
+import { formatTileLabel, formatTileNumber } from '../../utils/tileLabels'
+import { toSnakeCaseIdentifier } from '../../utils/projectName'
 
 export interface GbdkExportOptions {
     projectName: string
@@ -9,8 +11,6 @@ export interface GbdkExportOptions {
     exportAllLayers: boolean
     useBank?: number
 }
-
-const getSafeName = (name: string) => name.replace(/[^a-z0-9]/gi, '_').toLowerCase()
 
 /**
  * Converts tile pixel data to GBDK 2bpp planar format (GB/GBC/Mega Duck)
@@ -68,7 +68,7 @@ export const generateGbdkC = (
     map: TileMap | undefined,
     options: GbdkExportOptions
 ): string => {
-    const safeName = getSafeName(options.projectName)
+    const safeName = toSnakeCaseIdentifier(options.projectName)
     const bankStr = options.useBank !== undefined ? `BANK(${options.useBank}) ` : ''
     const bytesPerTile = platform.bytesPerTile
 
@@ -90,12 +90,8 @@ export const generateGbdkC = (
     tileset.tiles.forEach((tile, tileIdx) => {
         if (options.includeComments) {
             const tileName = tile.name?.trim()
-            const hexIndex = tileIdx.toString(16).toUpperCase()
-            if (tileName) {
-                output += `    /* Tile 0x${hexIndex}: ${tileName} */\n`
-            } else {
-                output += `    /* Tile 0x${hexIndex} */\n`
-            }
+            const tileLabel = tileName ? formatTileLabel(tileIdx, tileName) : formatTileNumber(tileIdx)
+            output += `    /* ${tileLabel} */\n`
         }
         const bin = tileToBinary(tile, platform)
         for (let i = 0; i < bytesPerTile; i += 2) {
@@ -109,7 +105,7 @@ export const generateGbdkC = (
         const layersToExport = options.exportAllLayers ? map.layers : [map.layers[0]]
 
         layersToExport.forEach((layer) => {
-            const layerSafeName = getSafeName(layer.name)
+            const layerSafeName = toSnakeCaseIdentifier(layer.name)
             if (options.includeComments) {
                 output += `/* Layer: ${layer.name} (${layer.type}) */\n`
             }
@@ -138,7 +134,7 @@ export const generateGbdkH = (
     map: TileMap | undefined,
     options: GbdkExportOptions
 ): string => {
-    const safeName = getSafeName(options.projectName)
+    const safeName = toSnakeCaseIdentifier(options.projectName)
     const guardName = safeName.toUpperCase() + '_H'
 
     let output = `/* GBDK Header Export from ${APP_NAME} */\n`
@@ -161,7 +157,7 @@ export const generateGbdkH = (
         output += `#define ${safeName}_map_HEIGHT ${map.height}\n\n`
 
         layersToExport.forEach((layer) => {
-            const layerSafeName = getSafeName(layer.name)
+            const layerSafeName = toSnakeCaseIdentifier(layer.name)
             output += `extern const unsigned char ${safeName}_map_${layerSafeName}[];\n`
         })
     }

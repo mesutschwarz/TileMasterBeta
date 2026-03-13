@@ -17,6 +17,7 @@ export const PaletteToolbar: React.FC = () => {
         <DraggableToolbar
             id="palette"
             title="Palette"
+            showTitle={false}
             dock={paletteDock}
             position={palettePos}
             onDockChange={setPaletteDock}

@@ -7,6 +7,7 @@ import { TileMap } from '../../types/map'
 import { Tile } from '../../types/tile'
 import { clsx } from 'clsx'
 import { Modal } from '../common/Modal'
+import { formatTileNumber } from '../../utils/tileLabels'
 
 interface ImportPreviewDialogBaseProps {
     platform: PlatformSpec
@@ -100,7 +101,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
     // --- Tile renderer helper ---
     const TilePreview: React.FC<{ tile: Tile; scale?: number; showIndex?: boolean; index?: number }> = ({ tile, scale = 4, showIndex, index }) => (
         <div
-            className="border border-white/5 group relative shrink-0 shadow-lg hover:border-accent-primary/50 transition-colors"
+            className="border border-ui-border group relative shrink-0 shadow-lg hover:border-accent-primary/50 transition-colors"
             style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${tile.width}, 1fr)`,
@@ -113,7 +114,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
             ))}
             {showIndex && (
                 <div className="absolute inset-0 bg-accent-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-white tabular-nums bg-black/80 px-1.5 py-0.5 rounded-full border border-white/10 shadow-xl">{index}</span>
+                    <span className="text-[8px] font-bold text-white tabular-nums bg-black/80 px-1.5 py-0.5 rounded-full border border-ui-border-strong shadow-xl">{formatTileNumber(index ?? 0)}</span>
                 </div>
             )}
         </div>
@@ -130,7 +131,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                     <span className="text-[9px] text-gray-500 font-mono">{map.width}x{map.height} · {map.layers.length} layer(s)</span>
                 </div>
                 <div
-                    className="grid border border-white/10 rounded-lg overflow-hidden shadow-lg origin-top-left"
+                    className="grid border border-ui-border-strong rounded-lg overflow-hidden shadow-lg origin-top-left"
                     style={{
                         gridTemplateColumns: `repeat(${map.width}, ${platform.tileWidth}px)`,
                         width: map.width * platform.tileWidth,
@@ -218,7 +219,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                     <div className="flex items-center gap-3">
                         <button
                             onClick={onCancel}
-                            className="px-6 py-2 rounded-lg bg-bg-tertiary border border-white/5 hover:border-white/20 text-gray-500 hover:text-white text-[10px] font-bold transition-all uppercase tracking-widest"
+                            className="px-6 py-2 rounded-lg bg-bg-tertiary border border-ui-border hover:border-ui-border-strong text-gray-500 hover:text-white text-[10px] font-bold transition-all uppercase tracking-widest"
                         >
                             Cancel
                         </button>
@@ -235,7 +236,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
         >
             <div className="flex flex-col md:flex-row min-h-[500px]">
                 {/* Main Preview Area */}
-                <div className="flex-1 bg-black/40 overflow-hidden flex flex-col relative border-r border-white/5">
+                <div className="flex-1 bg-black/40 overflow-hidden flex flex-col relative border-r border-ui-border">
                     {loading ? (
                         <div className="flex-1 flex items-center justify-center text-gray-700 animate-pulse uppercase tracking-[0.3em] text-[10px] font-bold">Processing Logic...</div>
                     ) : (
@@ -243,7 +244,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                             {/* PNG: Original image */}
                             {mode === 'png' && activeTab === 'original' && previewUrl && (
                                 <div className="relative animate-in fade-in duration-300">
-                                    <div className="shadow-preview-glow border border-white/10 rounded-lg overflow-hidden scale-[2] origin-top">
+                                    <div className="shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top">
                                         <img src={previewUrl} className="pixelated" alt="Original" />
                                     </div>
                                 </div>
@@ -253,7 +254,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                             {mode === 'png' && activeTab === 'result' && importResult && (
                                 <div className="relative animate-in fade-in duration-300 text-center">
                                     <div
-                                        className="grid shadow-preview-glow border border-white/10 rounded-lg overflow-hidden scale-[2] origin-top"
+                                        className="grid shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top"
                                         style={{
                                             gridTemplateColumns: `repeat(${importResult.mapWidth}, ${platform.tileWidth}px)`,
                                             width: importResult.mapWidth * platform.tileWidth,
@@ -329,7 +330,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                 {/* Stats & Options Sidebar */}
                 <div className="w-full md:w-72 bg-bg-tertiary/20 p-8 space-y-8">
                     <div className="space-y-6">
-                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">Analysis</h3>
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-ui-border pb-2">Analysis</h3>
                         <div className="space-y-4">
                             {mode === 'png' && (
                                 <div className="flex justify-between items-center text-xs">
@@ -362,11 +363,11 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                     </div>
 
                     <div className="space-y-6">
-                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">Processing</h3>
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-ui-border pb-2">Processing</h3>
 
                         {/* Dither - PNG only */}
                         {mode === 'png' && (
-                            <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-all cursor-pointer group">
+                            <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border hover:border-ui-border-strong transition-all cursor-pointer group">
                                 <input
                                     type="checkbox"
                                     className="hidden"
@@ -375,7 +376,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                                 />
                                 <div className={clsx(
                                     "w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center",
-                                    options.dither ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20" : "border-white/10 group-hover:border-white/20"
+                                    options.dither ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20" : "border-ui-border-strong group-hover:border-ui-border-strong"
                                 )}>
                                     {options.dither && <Check size={12} className="text-white" />}
                                 </div>
@@ -387,7 +388,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                         )}
 
                         {/* Cleanup - shared */}
-                        <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-all cursor-pointer group">
+                        <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border hover:border-ui-border-strong transition-all cursor-pointer group">
                             <input
                                 type="checkbox"
                                 className="hidden"
@@ -404,7 +405,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                                 "w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center",
                                 (mode === 'code' ? codeCleanup : (options.cleanup ?? true))
                                     ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20"
-                                    : "border-white/10 group-hover:border-white/20"
+                                    : "border-ui-border-strong group-hover:border-ui-border-strong"
                             )}>
                                 {(mode === 'code' ? codeCleanup : (options.cleanup ?? true)) && <Check size={12} className="text-white" />}
                             </div>

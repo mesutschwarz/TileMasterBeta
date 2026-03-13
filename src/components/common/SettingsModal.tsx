@@ -62,7 +62,7 @@ export const SettingsModal: React.FC = () => {
                 <div className="flex items-center justify-between w-full">
                     <button
                         onClick={resetSettings}
-                        className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-ui-danger hover:bg-ui-danger/10 transition-all"
+                        className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-ui-border-strong text-gray-400 hover:text-white hover:border-ui-danger hover:bg-ui-danger/10 transition-all"
                     >
                         Reset to Defaults
                     </button>
@@ -77,7 +77,7 @@ export const SettingsModal: React.FC = () => {
         >
             <div className="flex flex-col">
                 {/* Tabs */}
-                <div className="flex bg-bg-tertiary/10 border-b border-white/5 overflow-x-auto no-scrollbar">
+                <div className="flex bg-bg-tertiary/10 border-b border-ui-border overflow-x-auto no-scrollbar">
                     <TabButton id="tile" label="Tile Grid" icon={<Grid size={14} />} />
                     <TabButton id="map" label="Map Grid" icon={<MapIcon size={14} />} />
                     <TabButton id="editor" label="Appearance" icon={<Eye size={14} />} />
@@ -87,7 +87,7 @@ export const SettingsModal: React.FC = () => {
                 <div className="p-8 space-y-8 min-h-[400px]">
                     {activeTab === 'tile' && (
                         <div className="space-y-8 animate-in fade-in duration-200">
-                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-white/5">
+                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border">
                                 <div className="space-y-1">
                                     <div className="text-xs font-bold text-white uppercase tracking-wider">Enable Tile Grid</div>
                                     <div className="text-[10px] text-gray-500 italic">Show thin lines between pixels on the tile canvas</div>
@@ -129,7 +129,7 @@ export const SettingsModal: React.FC = () => {
                                                 "w-10 h-10 rounded-xl border-2 transition-all shadow-lg",
                                                 gridSettings.color === color
                                                     ? "border-accent-primary scale-110 shadow-accent-primary/20"
-                                                    : "border-white/5 hover:border-white/20"
+                                                    : "border-ui-border hover:border-ui-border-strong"
                                             )}
                                             style={{ backgroundColor: color }}
                                         />
@@ -141,7 +141,7 @@ export const SettingsModal: React.FC = () => {
 
                     {activeTab === 'map' && (
                         <div className="space-y-8 animate-in fade-in duration-200">
-                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-white/5">
+                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border">
                                 <div className="space-y-1">
                                     <div className="text-xs font-bold text-white uppercase tracking-wider">Enable Map Grid</div>
                                     <div className="text-[10px] text-gray-500 italic">Show lines representing tiles on the map canvas</div>
@@ -174,7 +174,7 @@ export const SettingsModal: React.FC = () => {
                                     <input
                                         type="number" value={mapGridSettings.size} min={1} max={32}
                                         onChange={(e) => updateMapGridSettings({ size: parseInt(e.target.value) || 1 })}
-                                        className="w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white text-center font-mono focus:border-accent-primary outline-none"
+                                        className="w-16 bg-black/40 border border-ui-border-strong rounded-lg px-2 py-1.5 text-xs text-white text-center font-mono focus:border-accent-primary outline-none"
                                     />
                                 </div>
                                 <div className="text-[9px] text-gray-500 italic bg-white/5 p-2 rounded-lg">Pro-tip: Set this to match your target platform's tile size (usually 8).</div>
@@ -201,7 +201,7 @@ export const SettingsModal: React.FC = () => {
                                             onClick={() => updateMapGridSettings({ color })}
                                             className={clsx(
                                                 "w-10 h-10 rounded-xl border-2 transition-all shadow-lg",
-                                                mapGridSettings.color === color ? "border-accent-primary scale-110 shadow-accent-primary/20" : "border-white/5 hover:border-white/20"
+                                                mapGridSettings.color === color ? "border-accent-primary scale-110 shadow-accent-primary/20" : "border-ui-border hover:border-ui-border-strong"
                                             )}
                                             style={{ backgroundColor: color }}
                                         />

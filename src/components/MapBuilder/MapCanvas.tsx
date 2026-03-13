@@ -4,6 +4,7 @@ import { useEditorStore } from '../../stores/editorStore'
 import * as Draw from '../../utils/drawingAlgorithms'
 import { getThemeCanvasColors } from '../../utils/themeColors'
 import { CanvasViewport } from '../common/CanvasViewport'
+import { formatTileNumber } from '../../utils/tileLabels'
 
 export const MapCanvas: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -596,7 +597,14 @@ export const MapCanvas: React.FC = () => {
             <div className="flex justify-between items-center gap-4">
                 <span className="text-gray-500 font-bold uppercase tracking-widest text-[8px]">Index</span>
                 <span className="text-gray-200 font-mono text-[10px]">
-                    {cursorPos ? activeLayer?.data[cursorPos.y * activeMap.width + cursorPos.x] ?? '∅' : '∅'}
+                    {(() => {
+                        if (!cursorPos || !activeLayer) return '∅'
+                        const cellValue = activeLayer.data[cursorPos.y * activeMap.width + cursorPos.x]
+                        if (activeLayer.type === 'tile' && cellValue >= 0) {
+                            return formatTileNumber(cellValue)
+                        }
+                        return cellValue ?? '∅'
+                    })()}
                 </span>
             </div>
             <div className="h-px bg-white/5 my-0.5" />

@@ -26,9 +26,9 @@ function App() {
             {!loadingDone && (
                 <LoadingScreen onComplete={() => setLoadingDone(true)} />
             )}
-            <div className="h-screen flex flex-col app-shell overflow-hidden text-text-primary font-sans p-3 gap-3">
+            <div className="h-screen flex flex-col app-shell overflow-hidden text-text-primary font-sans">
                 <Header />
-                <div className="flex-1 flex overflow-hidden gap-3">
+                <div className="flex-1 flex overflow-hidden min-h-0">
                     {/* 1. Activity Bar (Fixed, Leftmost) */}
                     <ActivityBar />
 
@@ -38,15 +38,15 @@ function App() {
                         {/* LEFT PANEL: SIDEBAR (Explorer) */}
                         {sidebarVisible && (
                             <>
-                                <Panel id="sidebar" defaultSize="20" minSize="15" maxSize="80" className="flex flex-col glass-panel overflow-hidden rounded-2xl">
+                                <Panel id="sidebar" defaultSize="24" minSize="16" maxSize="36" className="flex flex-col overflow-hidden border-r border-ui-border-subtle bg-bg-primary">
                                     <SidePanel />
                                 </Panel>
-                                <Separator className="w-2 mx-1 rounded-full hover:bg-accent-primary/50 transition-colors cursor-col-resize relative z-50 flex-shrink-0" />
+                                <Separator className="w-[1px] bg-ui-border-subtle hover:bg-accent-primary/60 transition-colors cursor-col-resize relative z-50 flex-shrink-0" />
                             </>
                         )}
 
                         {/* RIGHT PANEL: EDITOR (Dockview) */}
-                        <Panel className="relative glass-panel overflow-hidden rounded-2xl flex flex-col">
+                        <Panel className="relative overflow-hidden bg-bg-primary flex flex-col">
                             <DockLayout />
                         </Panel>
                     </Group>

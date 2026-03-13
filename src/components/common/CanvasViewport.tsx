@@ -83,7 +83,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         >
             <div
                 className={clsx(
-                    "relative shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] border-[3px] border-ui-border-strong/30 bg-bg-primary transition-transform duration-75 ease-out shrink-0 rounded-md overflow-hidden ring-[1px] ring-white/10",
+                    "relative shadow-[0_24px_48px_-28px_rgba(0,0,0,0.85)] border border-ui-border-strong/70 bg-bg-primary transition-transform duration-75 ease-out shrink-0 overflow-hidden ring-1 ring-ui-border/40",
                     canvasWrapperClassName
                 )}
                 style={{
@@ -99,7 +99,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2 pointer-events-none">
                 <div className="pointer-events-auto">
                     <Tooltip position="left" content={infoContent}>
-                        <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-bg-secondary/80 backdrop-blur-md border border-white/10 text-gray-400 hover:text-white transition-all shadow-lg cursor-help">
+                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-bg-secondary border border-ui-border-subtle text-text-secondary hover:text-text-primary transition-colors shadow-lg cursor-help">
                             <Info size={18} />
                         </div>
                     </Tooltip>
@@ -107,8 +107,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
                 <div className="flex items-center gap-2 pointer-events-auto">
                     {showZoomSlider && (
-                        <div className="flex items-center gap-3 px-3 py-2 bg-bg-secondary/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl animate-in slide-in-from-right-2 duration-200">
-                            <span className="text-[10px] font-mono text-gray-400 w-10 text-right">{formatZoomLabel(zoom)}</span>
+                        <div className="flex items-center gap-3 px-3 py-2 bg-bg-secondary border border-ui-border-subtle rounded-md shadow-2xl animate-in slide-in-from-right-2 duration-200">
+                            <span className="text-[10px] font-mono text-text-secondary w-10 text-right">{formatZoomLabel(zoom)}</span>
                             <input
                                 type="range" min={zoomMin} max={zoomMax} step="0.1" value={zoom}
                                 onChange={(e) => setZoom(parseFloat(e.target.value))}
@@ -119,8 +119,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                     <button
                         onClick={() => setShowZoomSlider(!showZoomSlider)}
                         className={clsx(
-                            "w-10 h-10 flex items-center justify-center rounded-xl border transition-all shadow-lg",
-                            showZoomSlider ? "bg-accent-primary border-accent-primary text-white" : "bg-bg-secondary/80 backdrop-blur-md border-white/10 text-gray-400 hover:text-white"
+                            "w-10 h-10 flex items-center justify-center rounded-lg border transition-colors shadow-lg",
+                            showZoomSlider ? "bg-accent-primary/25 border-accent-primary/70 text-accent-secondary" : "bg-bg-secondary border-ui-border-subtle text-text-secondary hover:text-text-primary"
                         )}
                         title="Zoom Slider"
                     >
@@ -131,7 +131,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                 <div className="pointer-events-auto">
                     <button
                         onClick={onZoomToFit}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-bg-secondary/80 backdrop-blur-md border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-all shadow-lg"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-bg-secondary border border-ui-border-subtle text-text-secondary hover:text-text-primary transition-colors shadow-lg"
                         title="Fit to Window"
                     >
                         <Maximize size={18} />

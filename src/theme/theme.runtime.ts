@@ -81,6 +81,7 @@ export const applyThemeById = (themeId: string) => {
     setCssVar('--ui-bg-hover', colors.uiBgHover)
     setCssVar('--ui-bg-hover-strong', colors.uiBgHoverStrong)
     setCssVar('--ui-bg-subtle', colors.uiBgSubtle)
+    setCssVar('--ui-tab-container-bg', colors.uiTabContainerBg)
     setCssVar('--ui-input-bg', colors.uiInputBg)
     setCssVar('--ui-input-border', colors.uiInputBorder)
     setCssVar('--ui-border-subtle', colors.uiBorderSubtle)
