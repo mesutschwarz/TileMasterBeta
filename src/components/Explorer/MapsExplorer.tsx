@@ -37,12 +37,12 @@ export const MapsExplorer: React.FC = () => {
     return (
         <div className="h-full flex flex-col min-h-0 overflow-hidden">
             {/* Header */}
-            <div className="w-full flex items-center justify-between px-4 py-3 shrink-0 border-b border-ui-border-subtle bg-bg-primary">
-                <span className="text-[10px] font-semibold tracking-[0.2em] text-text-secondary uppercase">Maps</span>
+            <div className="explorer-header">
+                <span className="explorer-title">Maps</span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={createNewMap}
-                        className="p-1.5 rounded-md transition-all action-button hover:bg-ui-active hover:text-text-primary"
+                        className="p-1.5 rounded-md transition-all action-button"
                         title="Create Map"
                     >
                         <Plus size={14} strokeWidth={2.5} />
@@ -64,10 +64,8 @@ export const MapsExplorer: React.FC = () => {
                                     key={map.id}
                                     onClick={() => selectMap(map.id)}
                                     className={clsx(
-                                        "px-3 py-2.5 rounded-md flex items-center justify-between group cursor-pointer transition-all duration-200 border",
-                                        selectedMapId === map.id
-                                            ? "bg-accent-primary/10 border-accent-primary"
-                                            : "bg-bg-secondary border-ui-border-subtle hover:border-ui-border-strong hover:bg-ui-bg-hover"
+                                        "list-item group",
+                                        selectedMapId === map.id && "list-item-selected"
                                     )}
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
@@ -92,7 +90,7 @@ export const MapsExplorer: React.FC = () => {
                                             ) : (
                                                 <span className="text-sm font-semibold truncate text-text-primary">{map.name}</span>
                                             )}
-                                            <span className="text-[10px] text-text-secondary font-medium tracking-wide mt-0.5">{map.width}x{map.height} • {map.layers.length} layers</span>
+                                            <span className="badge mt-0.5">{map.width}x{map.height} • {map.layers.length} layers</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -117,12 +115,12 @@ export const MapsExplorer: React.FC = () => {
                     )}
 
                     {selectedMapId && activeMap && (
-                        <div className="pt-4 border-t border-ui-border-subtle space-y-4">
+                        <div className="form-section">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">Selected Map</span>
+                                <span className="label-xs">Selected Map</span>
                                 <button
                                     onClick={() => setEditingMapId(activeMap.id)}
-                                    className="p-1.5 rounded-md transition-colors action-button hover:bg-ui-active"
+                                    className="p-1.5 rounded-md transition-colors action-button"
                                     title="Rename"
                                 >
                                     <Edit3 size={12} />
@@ -133,8 +131,8 @@ export const MapsExplorer: React.FC = () => {
                                 <span className="text-sm font-semibold truncate text-text-primary">{activeMap.name}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] uppercase font-bold text-text-secondary">Width</label>
+                                <div className="form-group">
+                                    <label className="label-xs opacity-70">Width</label>
                                     <input
                                         type="number"
                                         value={activeMap.width}
@@ -144,8 +142,8 @@ export const MapsExplorer: React.FC = () => {
                                         className="w-full modern-input"
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] uppercase font-bold text-text-secondary">Height</label>
+                                <div className="form-group">
+                                    <label className="label-xs opacity-70">Height</label>
                                     <input
                                         type="number"
                                         value={activeMap.height}
@@ -160,12 +158,12 @@ export const MapsExplorer: React.FC = () => {
                     )}
 
                     {selectedMapId && activeMap && (
-                        <div className="pt-4 border-t border-ui-border-subtle space-y-3">
+                        <div className="form-section">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">Layers</span>
+                                <span className="label-xs">Layers</span>
                                 <button
                                     onClick={() => setShowLayerMenu(!showLayerMenu)}
-                                    className="p-1.5 rounded-md transition-colors action-button hover:bg-ui-active"
+                                    className="p-1.5 rounded-md transition-colors action-button"
                                     title="Add Layer"
                                 >
                                     <Plus size={14} />
@@ -193,10 +191,10 @@ export const MapsExplorer: React.FC = () => {
                                         key={layer.id}
                                         onClick={() => setSelectedLayer(layer.id)}
                                         className={clsx(
-                                            "px-3 py-2.5 rounded-md flex items-center justify-between group cursor-pointer transition-all duration-200 border",
+                                            "list-item group",
                                             selectedLayerId === layer.id
-                                                ? "bg-accent-secondary/15 border-accent-secondary text-text-primary"
-                                                : "bg-bg-secondary border-ui-border-subtle hover:border-ui-border-strong hover:bg-ui-bg-hover"
+                                                ? "list-item-active"
+                                                : ""
                                         )}
                                     >
                                         <div className="flex items-center gap-3 min-w-0">
@@ -208,7 +206,7 @@ export const MapsExplorer: React.FC = () => {
                                             </button>
                                             <div className="flex flex-col min-w-0">
                                                 <span className="text-[13px] font-semibold truncate text-text-primary mr-2">{layer.name}</span>
-                                                <span className="text-[9px] uppercase tracking-wider text-text-secondary font-bold">{layer.type}</span>
+                                                <span className="badge">{layer.type}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -227,18 +225,16 @@ export const MapsExplorer: React.FC = () => {
                     )}
 
                     {selectedMapId && activeLayer?.type === 'collision' && (
-                        <div className="pt-4 border-t border-ui-border-subtle space-y-3">
-                            <span className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">Collision Palette</span>
+                        <div className="form-section">
+                            <span className="label-xs">Collision Palette</span>
                             <div className="grid grid-cols-2 gap-3">
                                 {[0, 1].map((id) => (
                                     <button
                                         key={id}
                                         onClick={() => setSelectedCollisionId(id)}
                                         className={clsx(
-                                            "px-3 py-2.5 rounded-lg border text-[11px] font-bold flex items-center justify-center gap-2 transition-all shadow-sm",
-                                            selectedCollisionId === id
-                                                ? "bg-accent-primary text-white border-transparent"
-                                                : "bg-ui-bg-subtle border-ui-border-strong text-text-primary hover:border-ui-border hover:bg-ui-bg-hover"
+                                            "collision-button",
+                                            selectedCollisionId === id && "collision-button-selected"
                                         )}
                                     >
                                         <div className={clsx("w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-bg-primary", id === 0 ? "border border-text-disabled ring-transparent" : "bg-ui-danger ring-ui-danger/30")} />

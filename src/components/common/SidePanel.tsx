@@ -7,7 +7,7 @@ export const SidePanel: React.FC = () => {
     const { sidebarView } = useEditorStore()
 
     return (
-        <div className="w-full h-full flex flex-col relative z-10 bg-bg-secondary/35 overflow-hidden min-h-0">
+        <div className="app-sidepanel">
             {sidebarView === 'tile' ? <TilesExplorer /> : <MapsExplorer />}
         </div>
     )

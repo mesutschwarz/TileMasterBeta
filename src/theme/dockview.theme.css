@@ -83,7 +83,7 @@
   height: 42px;
   padding-right: 8px;
   border-bottom: 1px solid var(--ui-border-subtle);
-  padding-left: 12px;
+  padding-left: 0;
 }
 
 .dockview-theme-custom .dv-actions-container .dv-action {

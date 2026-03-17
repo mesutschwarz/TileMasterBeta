@@ -1,0 +1,181 @@
+[data-theme="new-horizons"] {
+    /* -------------------------------------------------------------------------- */
+    /* Theme Variables                                                            */
+    /* -------------------------------------------------------------------------- */
+    --app-background: #0f0b29; /* Deep indigo */
+    --panel-surface: rgba(15, 11, 41, 0.4);
+    --bg-primary: #1e1b4b; /* Darker indigo */
+    --bg-secondary: #312e81; /* Indigo shade */
+    --bg-tertiary: #4338ca; /* Lighter indigo */
+    --bg-titlebar: #1e1b4b;
+    --bg-activitybar: #0f0b29;
+    --bg-statusbar: #0f0b29;
+
+    --bg-primary-rgb: 30 27 75;
+    --bg-secondary-rgb: 49 46 129;
+    --bg-tertiary-rgb: 67 56 202;
+    --bg-titlebar-rgb: 30 27 75;
+    --bg-activitybar-rgb: 15 11 41;
+    --bg-statusbar-rgb: 15 11 41;
+
+    --accent-primary: #ec4899; /* Pink accent */
+    --accent-primary-rgb: 236 72 153;
+    --accent-secondary: #f472b6; /* Lighter pink */
+    --accent-secondary-rgb: 244 114 182;
+
+    --text-primary: #fdf2f8; /* Very light pink/white */
+    --text-secondary: #db2777; /* Deep pink for secondary text (bold contrast) */
+    --text-disabled: #831843;
+
+    --ui-bg-hover: rgba(236, 72, 153, 0.2);
+    --ui-bg-hover-strong: rgba(236, 72, 153, 0.3);
+    --ui-bg-subtle: rgba(236, 72, 153, 0.1);
+    --ui-tab-container-bg: #1e1b4b;
+    --ui-input-bg: #312e81;
+    --ui-input-border: #ec4899;
+    --ui-border-subtle: #4338ca;
+    --ui-border-strong: #ec4899;
+
+    --ui-danger: #ef4444;
+    --ui-warning: #f59e0b;
+    --ui-success: #10b981;
+    --ui-info: #3b82f6;
+
+    --success: #10b981;
+    --success-rgb: 16 185 129;
+    --warning: #f59e0b;
+    --warning-rgb: 245 158 11;
+    --error: #ef4444;
+    --error-rgb: 239 68 68;
+
+    /* -------------------------------------------------------------------------- */
+    /* UI Overrides                                                               */
+    /* -------------------------------------------------------------------------- */
+    /* These styles override common.css rules directly for a unique look.          */
+
+    /* Global Font/Text Style */
+    font-family: 'Courier New', Courier, monospace; /* Retro terminal vibe */
+    letter-spacing: 0.05em;
+}
+
+/* Header Override: Chunky, bottom border only */
+[data-theme="new-horizons"] .app-header {
+    background: linear-gradient(to right, var(--bg-titlebar), var(--bg-secondary));
+    border-bottom: 4px solid var(--accent-primary);
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.2);
+}
+
+/* Status Bar Override: Floating pill design */
+[data-theme="new-horizons"] .status-bar {
+    margin: 8px 16px;
+    border-radius: 9999px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* Activity Bar Override: Rounded icons, floating look */
+[data-theme="new-horizons"] .activity-bar {
+    border-right: none;
+    background: transparent;
+    padding-top: 24px;
+}
+
+[data-theme="new-horizons"] .activity-icon {
+    border-radius: 50%; /* Fully round */
+    border: 2px solid transparent;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+[data-theme="new-horizons"] .activity-icon:hover {
+    transform: scale(1.1);
+    border-color: var(--accent-secondary);
+    background: transparent;
+}
+
+[data-theme="new-horizons"] .activity-icon.active {
+    background: var(--accent-primary);
+    box-shadow: 0 0 15px var(--accent-primary);
+    border-color: #fff;
+}
+
+/* Sidebar Panel: Floating card look */
+[data-theme="new-horizons"] .panel-container {
+    margin: 12px;
+    border-radius: 16px;
+    border: 2px solid var(--ui-border-subtle);
+    background: var(--bg-secondary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* Ensure content respects radius */
+}
+
+/* Modern Inputs: Retro terminal style */
+[data-theme="new-horizons"] .modern-input {
+    border-radius: 0;
+    border: none;
+    border-bottom: 2px solid var(--ui-border-strong);
+    background: transparent;
+    font-family: monospace;
+}
+
+[data-theme="new-horizons"] .modern-input:focus {
+    box-shadow: none;
+    border-bottom-color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Buttons: Neobrutalist / Retro */
+[data-theme="new-horizons"] .action-button {
+    border-radius: 0;
+    border: 1px solid var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+[data-theme="new-horizons"] .action-button:hover {
+    background: var(--accent-primary);
+    color: #fff;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--text-secondary);
+}
+
+/* Modal Overrides */
+[data-theme="new-horizons"] .modal-container {
+    border-radius: 0;
+    border: 4px solid var(--accent-primary);
+    box-shadow: 12px 12px 0 var(--bg-secondary);
+}
+
+[data-theme="new-horizons"] .modal-header {
+    background: var(--accent-primary);
+}
+
+[data-theme="new-horizons"] .modal-title {
+    color: #fff;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 0 #000;
+}
+
+[data-theme="new-horizons"] .modal-button-primary {
+    border-radius: 0;
+    border: 2px solid #fff;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+}
+
+[data-theme="new-horizons"] .modal-button-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+}
+
+/* Tile Grid Items */
+[data-theme="new-horizons"] .tile-grid-item {
+    border-radius: 12px;
+    border-width: 2px;
+}
+
+[data-theme="new-horizons"] .tile-grid-item-selected {
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 15px var(--accent-primary);
+    transform: scale(1.05);
+    z-index: 20;
+}

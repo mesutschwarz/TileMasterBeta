@@ -4,6 +4,7 @@ import { clsx } from 'clsx'
 type Orientation = 'horizontal' | 'vertical'
 
 type ToolButtonProps = {
+    id?: string
     active?: boolean
     disabled?: boolean
     intent?: 'default' | 'danger'
@@ -13,6 +14,7 @@ type ToolButtonProps = {
 }
 
 export const ToolButton: React.FC<ToolButtonProps> = ({
+    id,
     active,
     disabled,
     intent = 'default',
@@ -24,10 +26,11 @@ export const ToolButton: React.FC<ToolButtonProps> = ({
         <button
             onClick={onClick}
             disabled={disabled}
+            data-tool-id={id}
             className={clsx(
-                "w-8 h-8 flex items-center justify-center rounded-md transition-all",
-                active ? "bg-accent-primary/25 text-accent-secondary border border-accent-primary/60" : "text-text-secondary hover:text-text-primary hover:bg-ui-hover border border-transparent",
-                intent === 'danger' && "hover:text-ui-danger hover:bg-red-400/10",
+                "tool-button",
+                active && "tool-button-active",
+                intent === 'danger' && "tool-button-danger",
                 disabled && "opacity-20",
                 className
             )}
@@ -70,10 +73,8 @@ export const SwatchButton: React.FC<SwatchButtonProps> = ({ color, active, onCli
     <button
         onClick={onClick}
         className={clsx(
-            "w-5 h-5 rounded-[3px] border transition-all",
-            active
-                ? "border-accent-primary scale-110 shadow-lg shadow-accent-primary/40"
-                : "border-ui-border-subtle hover:border-ui-borderStrong"
+            "swatch-button",
+            active && "swatch-button-active"
         )}
         style={{ backgroundColor: color }}
     />

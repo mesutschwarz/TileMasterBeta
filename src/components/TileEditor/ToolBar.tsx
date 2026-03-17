@@ -4,6 +4,7 @@ import { useEditorStore } from '../../stores/editorStore'
 import { useProjectStore } from '../../stores/projectStore'
 import { Tooltip } from '../common/Tooltip'
 import { ToolButton, ToolbarDivider, ToolbarGroup } from '../common/Toolbar'
+import { clsx } from 'clsx'
 
 interface ToolBarProps {
     horizontal?: boolean
@@ -36,53 +37,56 @@ export const ToolBar: React.FC<ToolBarProps> = ({ horizontal = false }) => {
     const orientation = horizontal ? 'horizontal' : 'vertical'
 
     return (
-        <div className={horizontal ? "flex items-center gap-1 p-1 min-h-0 min-w-0 flex-row flex-wrap" : "flex items-center gap-1 p-1 min-h-0 min-w-0 flex-col flex-wrap content-start"}>
+        <div className={clsx(
+            "drawing-tools-layout",
+            horizontal ? "drawing-tools-layout-horizontal" : "drawing-tools-layout-vertical"
+        )}>
             {/* Draw Tools */}
             <ToolbarGroup orientation={orientation}>
                 <Tooltip content="Pencil Tool" shortcut="P" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('pencil')} active={tool === 'pencil'}>
+                    <ToolButton id="pencil" onClick={() => setTool('pencil')} active={tool === 'pencil'}>
                         <Pencil size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Eraser Tool" shortcut="E" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('eraser')} active={tool === 'eraser'}>
+                    <ToolButton id="eraser" onClick={() => setTool('eraser')} active={tool === 'eraser'}>
                         <Eraser size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Flood Fill" shortcut="G" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('fill')} active={tool === 'fill'}>
+                    <ToolButton id="fill" onClick={() => setTool('fill')} active={tool === 'fill'}>
                         <PaintBucket size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Color Picker" shortcut="I" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('picker')} active={tool === 'picker'}>
+                    <ToolButton id="picker" onClick={() => setTool('picker')} active={tool === 'picker'}>
                         <Pipette size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Select Tool" shortcut="S" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('select')} active={tool === 'select'}>
+                    <ToolButton id="select" onClick={() => setTool('select')} active={tool === 'select'}>
                         <Square size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Line Tool" shortcut="L" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('line')} active={tool === 'line'}>
+                    <ToolButton id="line" onClick={() => setTool('line')} active={tool === 'line'}>
                         <Slash size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Rectangle Tool" shortcut="B" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('rect')} active={tool === 'rect'}>
+                    <ToolButton id="rect" onClick={() => setTool('rect')} active={tool === 'rect'}>
                         <Square size={16} />
                     </ToolButton>
                 </Tooltip>
 
                 <Tooltip content="Circle Tool" shortcut="O" position={horizontal ? "bottom" : "right"}>
-                    <ToolButton onClick={() => setTool('circle')} active={tool === 'circle'}>
+                    <ToolButton id="circle" onClick={() => setTool('circle')} active={tool === 'circle'}>
                         <Circle size={16} />
                     </ToolButton>
                 </Tooltip>
@@ -108,8 +112,8 @@ export const ToolBar: React.FC<ToolBarProps> = ({ horizontal = false }) => {
                         <Minus size={16} />
                     </ToolButton>
                 </Tooltip>
-                <div className="w-8 h-8 flex items-center justify-center rounded-md text-[10px] text-text-secondary bg-bg-secondary border border-ui-border-subtle">
-                    {brushSize}px
+                <div className="w-8 h-8 flex items-center justify-center rounded-md text-[10px] text-text-secondary bg-bg-secondary border border-ui-border-subtle shrink-0">
+                    {brushSize}
                 </div>
                 <Tooltip content="Increase Brush" shortcut="+" position={horizontal ? "bottom" : "right"}>
                     <ToolButton onClick={() => setBrushSize(Math.min(16, brushSize + 1))}>

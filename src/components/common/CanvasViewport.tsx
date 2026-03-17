@@ -96,18 +96,18 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             </div>
 
             {/* Bottom Right: Controls Stack */}
-            <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2 pointer-events-none">
-                <div className="pointer-events-auto">
+            <div className="canvas-controls">
+                <div className="canvas-control-group">
                     <Tooltip position="left" content={infoContent}>
-                        <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-bg-secondary border border-ui-border-subtle text-text-secondary hover:text-text-primary transition-colors shadow-lg cursor-help">
+                        <div className="canvas-control-button cursor-help">
                             <Info size={18} />
                         </div>
                     </Tooltip>
                 </div>
 
-                <div className="flex items-center gap-2 pointer-events-auto">
+                <div className="canvas-control-group">
                     {showZoomSlider && (
-                        <div className="flex items-center gap-3 px-3 py-2 bg-bg-secondary border border-ui-border-subtle rounded-md shadow-2xl animate-in slide-in-from-right-2 duration-200">
+                        <div className="zoom-slider-container animate-in slide-in-from-right-2 duration-200">
                             <span className="text-[10px] font-mono text-text-secondary w-10 text-right">{formatZoomLabel(zoom)}</span>
                             <input
                                 type="range" min={zoomMin} max={zoomMax} step="0.1" value={zoom}
@@ -119,8 +119,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                     <button
                         onClick={() => setShowZoomSlider(!showZoomSlider)}
                         className={clsx(
-                            "w-10 h-10 flex items-center justify-center rounded-lg border transition-colors shadow-lg",
-                            showZoomSlider ? "bg-accent-primary/25 border-accent-primary/70 text-accent-secondary" : "bg-bg-secondary border-ui-border-subtle text-text-secondary hover:text-text-primary"
+                            "canvas-control-button",
+                            showZoomSlider && "canvas-control-button-active"
                         )}
                         title="Zoom Slider"
                     >
@@ -128,10 +128,10 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                     </button>
                 </div>
 
-                <div className="pointer-events-auto">
+                <div className="canvas-control-group">
                     <button
                         onClick={onZoomToFit}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-bg-secondary border border-ui-border-subtle text-text-secondary hover:text-text-primary transition-colors shadow-lg"
+                        className="canvas-control-button"
                         title="Fit to Window"
                     >
                         <Maximize size={18} />

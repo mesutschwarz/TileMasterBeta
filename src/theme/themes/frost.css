@@ -1,0 +1,46 @@
+[data-theme="frost"] {
+    --app-background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.5) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.5) 0%, transparent 40%), radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.2) 0%, transparent 50%), #f8fafc;
+    --bg-primary: rgba(255, 255, 255, 0.6);
+    --bg-secondary: rgba(255, 255, 255, 0.85);
+    --bg-tertiary: rgba(248, 250, 252, 0.95);
+    --bg-titlebar: rgba(255, 255, 255, 0.6);
+    --bg-activitybar: transparent;
+    --bg-statusbar: rgba(255, 255, 255, 0.6);
+
+    --bg-primary-rgb: 255 255 255;
+    --bg-secondary-rgb: 255 255 255;
+    --bg-tertiary-rgb: 248 250 252;
+    --bg-titlebar-rgb: 255 255 255;
+    --bg-activitybar-rgb: 255 255 255;
+    --bg-statusbar-rgb: 255 255 255;
+
+    --accent-primary: #0ea5e9;
+    --accent-primary-rgb: 14 165 233;
+    --accent-secondary: #10b981;
+    --accent-secondary-rgb: 16 185 129;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-disabled: #94a3b8;
+
+    --ui-bg-hover: rgba(14, 165, 233, 0.05);
+    --ui-bg-hover-strong: rgba(14, 165, 233, 0.1);
+    --ui-bg-subtle: rgba(255, 255, 255, 0.5);
+    --ui-tab-container-bg: #e8f2fd;
+    --ui-input-bg: rgba(255, 255, 255, 0.9);
+    --ui-input-border: rgba(14, 165, 233, 0.2);
+    --ui-border-subtle: rgba(14, 165, 233, 0.15);
+    --ui-border-strong: rgba(14, 165, 233, 0.4);
+
+    --ui-danger: #e11d48;
+    --ui-warning: #d97706;
+    --ui-success: #059669;
+    --ui-info: #0284c7;
+
+    --success: #059669;
+    --success-rgb: 5 150 105;
+    --warning: #d97706;
+    --warning-rgb: 217 119 6;
+    --error: #e11d48;
+    --error-rgb: 225 29 72;
+}

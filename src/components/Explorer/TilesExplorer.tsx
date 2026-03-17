@@ -222,26 +222,26 @@ export const TilesExplorer: React.FC = () => {
             )}
 
             {/* Header */}
-            <div className="w-full flex items-center justify-between px-4 py-3 shrink-0 border-b border-ui-border-subtle bg-bg-primary">
-                <span className="text-[10px] font-semibold tracking-[0.2em] text-text-secondary uppercase">Tiles Explorer</span>
+            <div className="explorer-header">
+                <span className="explorer-title">Tiles Explorer</span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={createNewTile}
-                        className="flex h-6 w-6 items-center justify-center rounded bg-accent-primary text-white hover:bg-accent-primary/80 transition-colors"
+                        className="flex h-6 w-6 items-center justify-center rounded bg-accent-primary text-white hover:bg-accent-primary/80 transition-colors shadow-sm"
                         title="Add Tile"
                     >
                         <Plus size={14} strokeWidth={2.5} />
                     </button>
                     <button
                         onClick={handleCleanupTiles}
-                        className="p-1.5 rounded-md transition-all action-button hover:bg-ui-active hover:text-text-primary"
+                        className="p-1.5 rounded-md transition-all action-button"
                         title="Cleanup duplicates"
                     >
                         <Eraser size={14} strokeWidth={2.5} />
                     </button>
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="p-1.5 rounded-md transition-all action-button hover:bg-ui-active hover:text-text-primary"
+                        className="p-1.5 rounded-md transition-all action-button"
                         title="Import PNG"
                     >
                         <Upload size={14} strokeWidth={2.5} />
@@ -338,12 +338,9 @@ export const TilesExplorer: React.FC = () => {
                                             height: `${tile.height * tileScale}px`
                                         }}
                                         className={clsx(
-                                            "rounded border overflow-hidden transition-all duration-200 relative shrink-0 p-1",
-                                            selectedTileId === tile.id
-                                                ? "border-accent-primary bg-accent-primary/10 shadow-[0_0_0_1px_rgba(var(--accent-primary-rgb),0.5)] z-10"
-                                                : hasError
-                                                    ? "border-ui-danger bg-ui-danger/10"
-                                                    : "border-ui-border-subtle bg-bg-secondary hover:border-ui-border-strong hover:bg-ui-bg-hover",
+                                            "tile-grid-item",
+                                            selectedTileId === tile.id && "tile-grid-item-selected",
+                                            hasError && "tile-grid-item-error",
                                             dragOverIndex === index && draggedTileIndex !== index && "border-accent-secondary z-20",
                                             draggableTileId === tile.id && "cursor-move border-accent-secondary opacity-50"
                                         )}
@@ -368,7 +365,7 @@ export const TilesExplorer: React.FC = () => {
                                 width: `${tilePreviewWidth}px`,
                                 height: `${tilePreviewHeight}px`
                             }}
-                            className="rounded border-2 border-dashed border-ui-border-strong bg-transparent flex flex-col items-center justify-center gap-2 transition-all hover:border-accent-primary hover:bg-accent-primary/10 group disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                            className="tile-grid-add-button group"
                         >
                             <Plus size={24} strokeWidth={2.5} className="text-ui-border-strong group-hover:text-accent-primary transition-colors hover:scale-110" />
                         </button>
@@ -383,7 +380,7 @@ export const TilesExplorer: React.FC = () => {
             </div>
 
             {/* Tile size slider — pinned to bottom */}
-            <div className="h-10 px-4 flex items-center gap-3 shrink-0 border-t border-ui-border-subtle bg-bg-primary">
+            <div className="explorer-footer">
                 <span className="text-[9px] font-bold tracking-wider text-text-disabled uppercase whitespace-nowrap">Size</span>
                 <input
                     type="range"
@@ -415,13 +412,13 @@ export const TilesExplorer: React.FC = () => {
                     <>
                         <button
                             onClick={closeInfoDialog}
-                            className="px-4 py-2 rounded-lg bg-bg-tertiary border border-ui-border text-[10px] font-bold text-gray-400 hover:text-white hover:border-ui-border-strong transition-colors uppercase tracking-wider"
+                            className="modal-button-secondary"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSaveInfo}
-                            className="px-6 py-2 rounded-lg bg-accent-primary hover:bg-accent-secondary text-white text-[10px] font-bold transition-all shadow-lg shadow-accent-primary/20 uppercase tracking-wider"
+                            className="modal-button-primary"
                         >
                             Save
                         </button>

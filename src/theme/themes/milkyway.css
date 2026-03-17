@@ -1,0 +1,47 @@
+[data-theme="milkyway"] {
+    --app-background: radial-gradient(circle at 12% 18%, rgba(255, 189, 89, 0.45) 0%, transparent 38%), radial-gradient(circle at 85% 22%, rgba(125, 211, 252, 0.42) 0%, transparent 40%), radial-gradient(circle at 70% 86%, rgba(244, 114, 182, 0.26) 0%, transparent 45%), radial-gradient(circle at 28% 78%, rgba(192, 132, 252, 0.20) 0%, transparent 44%), linear-gradient(160deg, #fffaf2 0%, #fff4e9 52%, #fef6ff 100%);
+    --panel-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 244, 229, 0.82) 55%, rgba(242, 250, 255, 0.84) 100%);
+    --bg-primary: rgba(255, 255, 255, 0.72);
+    --bg-secondary: rgba(255, 250, 244, 0.88);
+    --bg-tertiary: rgba(255, 245, 236, 0.93);
+    --bg-titlebar: rgba(255, 251, 247, 0.78);
+    --bg-activitybar: transparent;
+    --bg-statusbar: rgba(255, 248, 241, 0.78);
+
+    --bg-primary-rgb: 255 255 255;
+    --bg-secondary-rgb: 255 250 244;
+    --bg-tertiary-rgb: 255 245 236;
+    --bg-titlebar-rgb: 255 251 247;
+    --bg-activitybar-rgb: 255 255 255;
+    --bg-statusbar-rgb: 255 248 241;
+
+    --accent-primary: #fb7185;
+    --accent-primary-rgb: 251 113 133;
+    --accent-secondary: #38bdf8;
+    --accent-secondary-rgb: 56 189 248;
+
+    --text-primary: #3f2c24;
+    --text-secondary: #7c5b4c;
+    --text-disabled: #b48f7f;
+
+    --ui-bg-hover: rgba(251, 113, 133, 0.09);
+    --ui-bg-hover-strong: rgba(251, 113, 133, 0.16);
+    --ui-bg-subtle: rgba(255, 255, 255, 0.58);
+    --ui-tab-container-bg: rgba(255, 246, 238, 0.95);
+    --ui-input-bg: rgba(255, 255, 255, 0.94);
+    --ui-input-border: rgba(251, 146, 60, 0.26);
+    --ui-border-subtle: rgba(248, 113, 113, 0.18);
+    --ui-border-strong: rgba(56, 189, 248, 0.36);
+
+    --ui-danger: #ef4444;
+    --ui-warning: #f59e0b;
+    --ui-success: #10b981;
+    --ui-info: #0ea5e9;
+
+    --success: #10b981;
+    --success-rgb: 16 185 129;
+    --warning: #f59e0b;
+    --warning-rgb: 245 158 11;
+    --error: #ef4444;
+    --error-rgb: 239 68 68;
+}

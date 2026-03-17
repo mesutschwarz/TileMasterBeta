@@ -101,7 +101,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
     // --- Tile renderer helper ---
     const TilePreview: React.FC<{ tile: Tile; scale?: number; showIndex?: boolean; index?: number }> = ({ tile, scale = 4, showIndex, index }) => (
         <div
-            className="border border-ui-border group relative shrink-0 shadow-lg hover:border-accent-primary/50 transition-colors"
+            className="border border-ui-border-subtle group relative shrink-0 shadow-lg hover:border-accent-primary transition-colors"
             style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${tile.width}, 1fr)`,
@@ -127,8 +127,8 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
         return (
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">{map.name}</span>
-                    <span className="text-[9px] text-gray-500 font-mono">{map.width}x{map.height} · {map.layers.length} layer(s)</span>
+                    <span className="text-[10px] font-bold text-text-primary uppercase tracking-wider">{map.name}</span>
+                    <span className="text-[9px] text-text-disabled font-mono">{map.width}x{map.height} · {map.layers.length} layer(s)</span>
                 </div>
                 <div
                     className="grid border border-ui-border-strong rounded-lg overflow-hidden shadow-lg origin-top-left"
@@ -147,7 +147,7 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                                 style={{
                                     width: platform.tileWidth,
                                     height: platform.tileHeight,
-                                    backgroundColor: tile ? 'transparent' : 'var(--ui-bg-subtle, #111)'
+                                    backgroundColor: tile ? 'transparent' : 'var(--ui-bg-subtle)'
                                 }}
                             >
                                 {tile && (
@@ -175,10 +175,8 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
         <button
             onClick={() => setActiveTab(id)}
             className={clsx(
-                "px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2",
-                activeTab === id
-                    ? "bg-accent-primary text-white shadow-lg shadow-accent-primary/20"
-                    : "text-gray-500 hover:text-gray-300 bg-white/5 hover:bg-white/10"
+                "modal-tab-button",
+                activeTab === id && "modal-tab-button-active"
             )}
         >
             {icon}
@@ -214,19 +212,19 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
             footer={
                 <div className="flex items-center justify-between w-full gap-4">
                     <div className="flex items-center gap-2">
-                        {tabs.map(t => <TabButton key={t.id} id={t.id} label={t.label} icon={t.icon} />)}
+                        {/* We don't show tabs in footer here because we'll use modal-tab-bar inside body */}
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={onCancel}
-                            className="px-6 py-2 rounded-lg bg-bg-tertiary border border-ui-border hover:border-ui-border-strong text-gray-500 hover:text-white text-[10px] font-bold transition-all uppercase tracking-widest"
+                            className="modal-button-secondary"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleConfirm}
                             disabled={!isReady}
-                            className="px-8 py-2 rounded-lg bg-accent-primary hover:bg-accent-secondary disabled:opacity-30 text-white text-[10px] font-bold transition-all shadow-lg shadow-accent-primary/20 flex items-center justify-center gap-2 uppercase tracking-widest"
+                            className="modal-button-primary flex items-center gap-2"
                         >
                             <Check size={16} /> Confirm Import
                         </button>
@@ -234,186 +232,192 @@ export const ImportPreviewDialog: React.FC<ImportPreviewDialogProps | LegacyImpo
                 </div>
             }
         >
-            <div className="flex flex-col md:flex-row min-h-[500px]">
-                {/* Main Preview Area */}
-                <div className="flex-1 bg-black/40 overflow-hidden flex flex-col relative border-r border-ui-border">
-                    {loading ? (
-                        <div className="flex-1 flex items-center justify-center text-gray-700 animate-pulse uppercase tracking-[0.3em] text-[10px] font-bold">Processing Logic...</div>
-                    ) : (
-                        <div className="flex-1 overflow-auto p-12 flex items-start justify-center relative bg-checkered custom-scrollbar">
-                            {/* PNG: Original image */}
-                            {mode === 'png' && activeTab === 'original' && previewUrl && (
-                                <div className="relative animate-in fade-in duration-300">
-                                    <div className="shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top">
-                                        <img src={previewUrl} className="pixelated" alt="Original" />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* PNG: Tilemap result */}
-                            {mode === 'png' && activeTab === 'result' && importResult && (
-                                <div className="relative animate-in fade-in duration-300 text-center">
-                                    <div
-                                        className="grid shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top"
-                                        style={{
-                                            gridTemplateColumns: `repeat(${importResult.mapWidth}, ${platform.tileWidth}px)`,
-                                            width: importResult.mapWidth * platform.tileWidth,
-                                        }}
-                                    >
-                                        {importResult.mapData.map((tileIdx, i) => {
-                                            const tile = tileIdx !== -1 ? importResult.tiles[tileIdx] : null
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    style={{
-                                                        width: platform.tileWidth,
-                                                        height: platform.tileHeight,
-                                                        backgroundColor: tile ? 'transparent' : 'var(--ui-bg-subtle)'
-                                                    }}
-                                                >
-                                                    {tile && (
-                                                        <div
-                                                            className="w-full h-full"
-                                                            style={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: `repeat(${tile.width}, 1fr)`,
-                                                            }}
-                                                        >
-                                                            {tile.data.map((colorIdx, pi) => (
-                                                                <div key={pi} style={{ backgroundColor: platform.defaultPalette[colorIdx] }} />
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Shared: Tile grid (both PNG and Code) */}
-                            {activeTab === 'tiles' && (
-                                <div className="w-full max-w-2xl animate-in fade-in duration-300 pt-4">
-                                    {(() => {
-                                        const tilesToShow = mode === 'code' ? codeTiles : (importResult?.tiles ?? [])
-                                        if (tilesToShow.length === 0) {
-                                            return <div className="text-center text-gray-600 text-[10px] uppercase tracking-widest font-bold py-12">No tiles found</div>
-                                        }
-                                        return (
-                                            <div className="flex flex-wrap gap-2 pb-12 justify-center">
-                                                {tilesToShow.map((tile, i) => (
-                                                    <div key={i} className="flex flex-col items-center gap-1">
-                                                        <TilePreview tile={tile} showIndex index={i} />
-                                                        {tile.name && (
-                                                            <span className="text-[7px] text-gray-500 font-bold max-w-[32px] truncate text-center" title={tile.name}>{tile.name}</span>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )
-                                    })()}
-                                </div>
-                            )}
-
-                            {/* Code: Maps tab */}
-                            {mode === 'code' && activeTab === 'maps' && codeMaps.length > 0 && (
-                                <div className="w-full max-w-3xl animate-in fade-in duration-300 pt-4 space-y-8 pb-12">
-                                    {codeMaps.map((map) => (
-                                        <MapPreview key={map.id} map={map} tiles={codeTiles} />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
+            <div className="flex flex-col flex-1">
+                <div className="modal-tab-bar">
+                    {tabs.map(t => <TabButton key={t.id} id={t.id} label={t.label} icon={t.icon} />)}
                 </div>
 
-                {/* Stats & Options Sidebar */}
-                <div className="w-full md:w-72 bg-bg-tertiary/20 p-8 space-y-8">
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-ui-border pb-2">Analysis</h3>
-                        <div className="space-y-4">
-                            {mode === 'png' && (
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-500 uppercase font-bold text-[9px]">Source</span>
-                                    <span className="text-white font-mono">{stats.width}x{stats.height}</span>
-                                </div>
-                            )}
-                            {mode === 'code' && 'fileName' in props && (
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-500 uppercase font-bold text-[9px]">File</span>
-                                    <span className="text-white font-mono text-[9px] truncate max-w-[140px]" title={props.fileName}>{props.fileName}</span>
-                                </div>
-                            )}
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-gray-500 uppercase font-bold text-[9px]">Tiles Found</span>
-                                <span className="text-accent-primary font-bold font-mono">{mode === 'code' ? codeTiles.length : stats.count}</span>
+                <div className="flex flex-col md:flex-row flex-1 min-h-[500px]">
+                    {/* Main Preview Area */}
+                    <div className="modal-main-content border-r border-ui-border-subtle">
+                        {loading ? (
+                            <div className="flex-1 flex items-center justify-center text-text-disabled animate-pulse uppercase tracking-[0.3em] text-[10px] font-bold">Processing Logic...</div>
+                        ) : (
+                            <div className="flex-1 overflow-auto p-12 flex items-start justify-center relative bg-checkered custom-scrollbar">
+                                {/* PNG: Original image */}
+                                {mode === 'png' && activeTab === 'original' && previewUrl && (
+                                    <div className="relative animate-in fade-in duration-300">
+                                        <div className="shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top">
+                                            <img src={previewUrl} className="pixelated" alt="Original" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* PNG: Tilemap result */}
+                                {mode === 'png' && activeTab === 'result' && importResult && (
+                                    <div className="relative animate-in fade-in duration-300 text-center">
+                                        <div
+                                            className="grid shadow-preview-glow border border-ui-border-strong rounded-lg overflow-hidden scale-[2] origin-top"
+                                            style={{
+                                                gridTemplateColumns: `repeat(${importResult.mapWidth}, ${platform.tileWidth}px)`,
+                                                width: importResult.mapWidth * platform.tileWidth,
+                                            }}
+                                        >
+                                            {importResult.mapData.map((tileIdx, i) => {
+                                                const tile = tileIdx !== -1 ? importResult.tiles[tileIdx] : null
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        style={{
+                                                            width: platform.tileWidth,
+                                                            height: platform.tileHeight,
+                                                            backgroundColor: tile ? 'transparent' : 'var(--ui-bg-subtle)'
+                                                        }}
+                                                    >
+                                                        {tile && (
+                                                            <div
+                                                                className="w-full h-full"
+                                                                style={{
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: `repeat(${tile.width}, 1fr)`,
+                                                                }}
+                                                            >
+                                                                {tile.data.map((colorIdx, pi) => (
+                                                                    <div key={pi} style={{ backgroundColor: platform.defaultPalette[colorIdx] }} />
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Shared: Tile grid (both PNG and Code) */}
+                                {activeTab === 'tiles' && (
+                                    <div className="w-full max-w-2xl animate-in fade-in duration-300 pt-4">
+                                        {(() => {
+                                            const tilesToShow = mode === 'code' ? codeTiles : (importResult?.tiles ?? [])
+                                            if (tilesToShow.length === 0) {
+                                                return <div className="text-center text-text-disabled text-[10px] uppercase tracking-widest font-bold py-12">No tiles found</div>
+                                            }
+                                            return (
+                                                <div className="flex flex-wrap gap-2 pb-12 justify-center">
+                                                    {tilesToShow.map((tile, i) => (
+                                                        <div key={i} className="flex flex-col items-center gap-1">
+                                                            <TilePreview tile={tile} showIndex index={i} />
+                                                            {tile.name && (
+                                                                <span className="text-[7px] text-text-disabled font-bold max-w-[32px] truncate text-center" title={tile.name}>{tile.name}</span>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )
+                                        })()}
+                                    </div>
+                                )}
+
+                                {/* Code: Maps tab */}
+                                {mode === 'code' && activeTab === 'maps' && codeMaps.length > 0 && (
+                                    <div className="w-full max-w-3xl animate-in fade-in duration-300 pt-4 space-y-8 pb-12">
+                                        {codeMaps.map((map) => (
+                                            <MapPreview key={map.id} map={map} tiles={codeTiles} />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            {mode === 'code' && codeMaps.length > 0 && (
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-500 uppercase font-bold text-[9px]">Maps Found</span>
-                                    <span className="text-accent-primary font-bold font-mono">{codeMaps.length}</span>
-                                </div>
-                            )}
-                            {(mode === 'code' ? codeTiles.length : stats.count) > platform.maxTiles && (
-                                <div className="flex items-center gap-2 text-[9px] text-red-400 font-bold bg-red-400/10 p-3 rounded-xl border border-red-400/20 animate-pulse">
-                                    <Shield size={12} /> Limit Exceeded ({platform.maxTiles})
-                                </div>
-                            )}
-                        </div>
+                        )}
                     </div>
 
-                    <div className="space-y-6">
-                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-ui-border pb-2">Processing</h3>
+                    {/* Stats & Options Sidebar */}
+                    <div className="modal-sidebar md:w-72 space-y-8">
+                        <div className="space-y-6">
+                            <h3 className="label-xs border-b border-ui-border-subtle pb-2">Analysis</h3>
+                            <div className="space-y-4">
+                                {mode === 'png' && (
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="label-xs opacity-70">Source</span>
+                                        <span className="text-text-primary font-mono">{stats.width}x{stats.height}</span>
+                                    </div>
+                                )}
+                                {mode === 'code' && 'fileName' in props && (
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="label-xs opacity-70">File</span>
+                                        <span className="text-text-primary font-mono text-[9px] truncate max-w-[140px]" title={props.fileName}>{props.fileName}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="label-xs opacity-70">Tiles Found</span>
+                                    <span className="text-accent-primary font-bold font-mono">{mode === 'code' ? codeTiles.length : stats.count}</span>
+                                </div>
+                                {mode === 'code' && codeMaps.length > 0 && (
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="label-xs opacity-70">Maps Found</span>
+                                        <span className="text-accent-primary font-bold font-mono">{codeMaps.length}</span>
+                                    </div>
+                                )}
+                                {(mode === 'code' ? codeTiles.length : stats.count) > platform.maxTiles && (
+                                    <div className="flex items-center gap-2 text-[9px] text-red-400 font-bold bg-red-400/10 p-3 rounded-xl border border-red-400/20 animate-pulse">
+                                        <Shield size={12} /> Limit Exceeded ({platform.maxTiles})
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
-                        {/* Dither - PNG only */}
-                        {mode === 'png' && (
-                            <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border hover:border-ui-border-strong transition-all cursor-pointer group">
+                        <div className="space-y-6">
+                            <h3 className="label-xs border-b border-ui-border-subtle pb-2">Processing</h3>
+
+                            {/* Dither - PNG only */}
+                            {mode === 'png' && (
+                                <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border-subtle hover:border-ui-border-strong transition-all cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={options.dither}
+                                        onChange={(e) => setOptions(prev => ({ ...prev, dither: e.target.checked }))}
+                                    />
+                                    <div className={clsx(
+                                        "w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center",
+                                        options.dither ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20" : "border-ui-border-strong group-hover:border-ui-border-strong"
+                                    )}>
+                                        {options.dither && <Check size={12} className="text-white" />}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-text-primary uppercase tracking-wider">Dithering</span>
+                                        <span className="text-[9px] text-text-disabled italic">Smooth color blends</span>
+                                    </div>
+                                </label>
+                            )}
+
+                            {/* Cleanup - shared */}
+                            <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border-subtle hover:border-ui-border-strong transition-all cursor-pointer group">
                                 <input
                                     type="checkbox"
                                     className="hidden"
-                                    checked={options.dither}
-                                    onChange={(e) => setOptions(prev => ({ ...prev, dither: e.target.checked }))}
+                                    checked={mode === 'code' ? codeCleanup : (options.cleanup ?? true)}
+                                    onChange={(e) => {
+                                        if (mode === 'code') {
+                                            setCodeCleanup(e.target.checked)
+                                        } else {
+                                            setOptions(prev => ({ ...prev, cleanup: e.target.checked }))
+                                        }
+                                    }}
                                 />
                                 <div className={clsx(
                                     "w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center",
-                                    options.dither ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20" : "border-ui-border-strong group-hover:border-ui-border-strong"
+                                    (mode === 'code' ? codeCleanup : (options.cleanup ?? true))
+                                        ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20"
+                                        : "border-ui-border-strong group-hover:border-ui-border-strong"
                                 )}>
-                                    {options.dither && <Check size={12} className="text-white" />}
+                                    {(mode === 'code' ? codeCleanup : (options.cleanup ?? true)) && <Check size={12} className="text-white" />}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">Dithering</span>
-                                    <span className="text-[9px] text-gray-500 italic">Smooth color blends</span>
+                                    <span className="text-[10px] font-bold text-text-primary uppercase tracking-wider">Cleanup duplicates</span>
+                                    <span className="text-[9px] text-text-disabled italic">Merge identical tiles and reorder by usage</span>
                                 </div>
                             </label>
-                        )}
-
-                        {/* Cleanup - shared */}
-                        <label className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-ui-border hover:border-ui-border-strong transition-all cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                className="hidden"
-                                checked={mode === 'code' ? codeCleanup : (options.cleanup ?? true)}
-                                onChange={(e) => {
-                                    if (mode === 'code') {
-                                        setCodeCleanup(e.target.checked)
-                                    } else {
-                                        setOptions(prev => ({ ...prev, cleanup: e.target.checked }))
-                                    }
-                                }}
-                            />
-                            <div className={clsx(
-                                "w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center",
-                                (mode === 'code' ? codeCleanup : (options.cleanup ?? true))
-                                    ? "bg-accent-primary border-accent-primary shadow-lg shadow-accent-primary/20"
-                                    : "border-ui-border-strong group-hover:border-ui-border-strong"
-                            )}>
-                                {(mode === 'code' ? codeCleanup : (options.cleanup ?? true)) && <Check size={12} className="text-white" />}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Cleanup duplicates</span>
-                                <span className="text-[9px] text-gray-500 italic">Merge identical tiles and reorder by usage</span>
-                            </div>
-                        </label>
+                        </div>
                     </div>
                 </div>
             </div>

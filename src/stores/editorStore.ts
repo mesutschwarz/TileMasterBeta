@@ -82,10 +82,15 @@ interface EditorState {
     drawingToolbarDock: 'left' | 'right' | 'top' | 'bottom' | 'floating'
     paletteDock: 'left' | 'right' | 'top' | 'bottom' | 'floating'
     drawingToolbarPos: { x: number, y: number }
+    drawingToolbarSize: { width: number | 'auto', height: number | 'auto' }
     palettePos: { x: number, y: number }
 
     // Modals
     showSettings: boolean
+    showHelp: boolean
+
+    // Dockview API for global access (e.g. reopening tabs)
+    dockviewApi: any | null
 
     // Actions
     setView: (view: ViewMode) => void
@@ -112,8 +117,11 @@ interface EditorState {
     setDrawingToolbarDock: (dock: EditorState['drawingToolbarDock']) => void
     setPaletteDock: (dock: EditorState['paletteDock']) => void
     setDrawingToolbarPos: (pos: { x: number, y: number }) => void
+    setDrawingToolbarSize: (size: { width: number | 'auto', height: number | 'auto' }) => void
     setPalettePos: (pos: { x: number, y: number }) => void
     setShowSettings: (show: boolean) => void
+    setShowHelp: (show: boolean) => void
+    setDockviewApi: (api: any) => void
     setThemeId: (themeId: string) => void
     resetSettings: () => void
 }
@@ -142,9 +150,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     drawingToolbarDock: saved.drawingToolbarDock ?? defaultSettings.drawingToolbarDock,
     paletteDock: saved.paletteDock ?? defaultSettings.paletteDock,
     drawingToolbarPos: { x: 20, y: 20 },
+    drawingToolbarSize: { width: 'auto', height: 'auto' },
     palettePos: { x: 20, y: 100 },
 
     showSettings: false,
+    showHelp: false,
+    dockviewApi: null,
 
     setView: (view) => set({ view }),
     setSidebarView: (sidebarView) => set({ sidebarView }),
@@ -175,8 +186,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     setDrawingToolbarDock: (drawingToolbarDock) => { const s = get(); saveSettings({ themeId: s.themeId, gridSettings: s.gridSettings, mapGridSettings: s.mapGridSettings, drawingToolbarDock, paletteDock: s.paletteDock }); set({ drawingToolbarDock }) },
     setPaletteDock: (paletteDock) => { const s = get(); saveSettings({ themeId: s.themeId, gridSettings: s.gridSettings, mapGridSettings: s.mapGridSettings, drawingToolbarDock: s.drawingToolbarDock, paletteDock }); set({ paletteDock }) },
     setDrawingToolbarPos: (drawingToolbarPos) => set({ drawingToolbarPos }),
+    setDrawingToolbarSize: (drawingToolbarSize) => set({ drawingToolbarSize }),
     setPalettePos: (palettePos) => set({ palettePos }),
     setShowSettings: (showSettings) => set({ showSettings }),
+    setShowHelp: (showHelp) => set({ showHelp }),
+    setDockviewApi: (dockviewApi) => set({ dockviewApi }),
     setThemeId: (themeId) => {
         const s = get()
         saveSettings({ themeId, gridSettings: s.gridSettings, mapGridSettings: s.mapGridSettings, drawingToolbarDock: s.drawingToolbarDock, paletteDock: s.paletteDock })

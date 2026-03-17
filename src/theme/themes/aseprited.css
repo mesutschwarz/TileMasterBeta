@@ -1,0 +1,303 @@
+[data-theme="aseprited"] {
+    /* -------------------------------------------------------------------------- */
+    /* Aseprite Palette                                                           */
+    /* -------------------------------------------------------------------------- */
+    --app-background: #5b5b5b;
+    --panel-surface: #5b5b5b;
+    --bg-primary: #3d3d3d;
+    --bg-secondary: #5b5b5b;
+    --bg-tertiary: #2e2e2e;
+    --bg-titlebar: #7d7d7d;
+    --bg-activitybar: #3d3d3d;
+    --bg-statusbar: #7d7d7d;
+
+    --bg-primary-rgb: 61 61 61;
+    --bg-secondary-rgb: 91 91 91;
+    --bg-tertiary-rgb: 46 46 46;
+
+    --accent-primary: #ffce00; /* Aseprite Yellow */
+    --accent-primary-rgb: 255 206 0;
+    --accent-secondary: #ff9d00;
+    --accent-secondary-rgb: 255 157 0;
+
+    --text-primary: #ffffff;
+    --text-secondary: #ffce00;
+    --text-disabled: #a0a0a0;
+
+    --ui-bg-hover: rgba(255, 206, 0, 0.1);
+    --ui-bg-hover-strong: rgba(255, 206, 0, 0.2);
+    --ui-bg-subtle: #2e2e2e;
+    --ui-tab-container-bg: #3d3d3d;
+    --ui-input-bg: #1e1e1e;
+    --ui-input-border: #000000;
+    --ui-border-subtle: #3d3d3d;
+    --ui-border-strong: #000000;
+
+    --ui-danger: #ff0000;
+    --ui-warning: #ffce00;
+    --ui-success: #00ff00;
+    --ui-info: #00ffff;
+
+    /* Spacing & Radius Overrides */
+    --ui-radius-sm: 0;
+    --ui-radius-md: 0;
+    --ui-radius-lg: 0;
+    --ui-radius-xl: 0;
+    --ui-radius-full: 0;
+
+    --ui-gap-xs: 2px;
+    --ui-gap-sm: 4px;
+    --ui-gap-md: 8px;
+    --ui-gap-lg: 12px;
+
+    /* 3D Border Effects */
+    --ase-border-outset: 1px solid #ffffff33;
+    --ase-border-inset: 1px solid #00000066;
+    --ase-shadow-outset: inset 1.5px 1.5px #ffffff44, inset -1.5px -1.5px #00000044;
+    --ase-shadow-inset: inset 1.5px 1.5px #00000088, inset -1.5px -1.5px #ffffff22;
+}
+
+/* Base resets for Aseprited */
+[data-theme="aseprited"] body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    image-rendering: pixelated;
+}
+
+/* Header: Classic grey bar with 3D shadow */
+[data-theme="aseprited"] .app-header {
+    height: 2.5rem;
+    background: #7d7d7d;
+    border-bottom: 2px solid #000;
+    box-shadow: var(--ase-shadow-outset);
+    padding: 0 8px;
+}
+
+/* Status Bar: Flat and embedded */
+[data-theme="aseprited"] .status-bar {
+    height: 24px;
+    background: #5b5b5b;
+    border-top: 1px solid #000;
+    box-shadow: var(--ase-shadow-inset);
+    color: #fff;
+}
+
+/* Activity Bar: Fix width and icon visibility */
+[data-theme="aseprited"] .activity-bar {
+    width: 56px !important; /* Increased width for comfortable icon fit */
+    background: #3d3d3d;
+    border-right: 2px solid #000;
+    padding: 8px 0;
+}
+
+[data-theme="aseprited"] .activity-icon {
+    border-radius: 0;
+    border: 1px solid transparent;
+    color: #a0a0a0;
+    width: 44px;
+    height: 44px;
+}
+
+[data-theme="aseprited"] .activity-icon:hover {
+    background: #5b5b5b;
+    box-shadow: var(--ase-shadow-outset);
+    color: #fff;
+    border: 1px solid #000;
+}
+
+[data-theme="aseprited"] .activity-icon.active {
+    background: #5b5b5b;
+    border: 1px solid #000;
+    box-shadow: var(--ase-shadow-inset);
+    color: var(--accent-primary);
+}
+
+/* Panels: Hard edges, blocky separation */
+[data-theme="aseprited"] .panel-container {
+    background: #5b5b5b;
+    border: 1px solid #000;
+    margin: 1px;
+}
+
+[data-theme="aseprited"] .panel-separator {
+    width: 4px;
+    background: #3d3d3d;
+    border: 1px solid #000;
+    margin: 0 -1px;
+}
+
+/* Editor Headers (Dockview Tabs) */
+[data-theme="aseprited"] .dv-tab {
+    background: #3d3d3d !important;
+    border: 1px solid #000 !important;
+    border-bottom: none !important;
+    margin: 4px 2px 0 2px !important;
+    border-radius: 0 !important;
+    height: 24px !important;
+    box-shadow: var(--ase-shadow-outset) !important;
+    font-size: 11px !important;
+    color: #fff !important;
+}
+
+[data-theme="aseprited"] .dv-tab-active {
+    background: #5b5b5b !important;
+    color: var(--accent-primary) !important;
+    box-shadow: inset 0 2px var(--accent-primary) !important;
+}
+
+[data-theme="aseprited"] .dv-tabs-and-actions-container {
+    background: #2e2e2e !important;
+    border-bottom: 1px solid #000 !important;
+    height: 32px !important;
+}
+
+/* Canvas Controls */
+[data-theme="aseprited"] .canvas-control-button {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: #7d7d7d;
+    box-shadow: var(--ase-shadow-outset);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+}
+
+[data-theme="aseprited"] .canvas-control-button:hover {
+    background: #8d8d8d;
+}
+
+[data-theme="aseprited"] .canvas-control-button-active {
+    background: var(--accent-primary);
+    color: #000;
+    box-shadow: var(--ase-shadow-inset);
+}
+
+[data-theme="aseprited"] .zoom-slider-container {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: #5b5b5b;
+    box-shadow: var(--ase-shadow-outset);
+}
+
+/* Drawing Tools */
+[data-theme="aseprited"] .tool-button {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: #7d7d7d;
+    box-shadow: var(--ase-shadow-outset);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    margin: 1px;
+}
+
+[data-theme="aseprited"] .tool-button-active {
+    background: var(--accent-primary);
+    color: #000;
+    box-shadow: var(--ase-shadow-inset);
+    transform: translate(0.5px, 0.5px);
+}
+
+/* Modal Windows */
+[data-theme="aseprited"] .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: none;
+}
+
+[data-theme="aseprited"] .modal-container {
+    border-radius: 0;
+    border: 2px solid #000;
+    background: #5b5b5b;
+    box-shadow: 12px 12px 0 rgba(0,0,0,0.4);
+}
+
+[data-theme="aseprited"] .modal-header {
+    background: #7d7d7d;
+    border-bottom: 2px solid #000;
+    padding: 4px 12px;
+    box-shadow: var(--ase-shadow-outset);
+}
+
+[data-theme="aseprited"] .modal-sidebar {
+    background: #4d4d4d;
+    border: 1px solid #000;
+    box-shadow: var(--ase-shadow-inset);
+    margin: 8px;
+    border-radius: 0;
+}
+
+[data-theme="aseprited"] .modal-main-content {
+    background: #3d3d3d;
+    margin: 8px 8px 8px 0;
+    border: 1px solid #000;
+    box-shadow: var(--ase-shadow-inset);
+    border-radius: 0;
+}
+
+[data-theme="aseprited"] .modal-footer {
+    background: #7d7d7d;
+    border-top: 2px solid #000;
+    box-shadow: var(--ase-shadow-outset);
+}
+
+/* General Buttons */
+[data-theme="aseprited"] .action-button,
+[data-theme="aseprited"] .nav-button,
+[data-theme="aseprited"] .modal-button-secondary,
+[data-theme="aseprited"] .collision-button {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: #7d7d7d;
+    box-shadow: var(--ase-shadow-outset);
+    color: #fff;
+    font-weight: bold;
+    text-transform: none;
+}
+
+[data-theme="aseprited"] .modal-button-primary,
+[data-theme="aseprited"] .collision-button-selected {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: var(--accent-primary);
+    color: #000;
+    box-shadow: var(--ase-shadow-outset);
+}
+
+[data-theme="aseprited"] button:active:not(:disabled) {
+    box-shadow: var(--ase-shadow-inset);
+    transform: translate(1px, 1px);
+}
+
+/* Inputs */
+[data-theme="aseprited"] .modern-input {
+    border-radius: 0;
+    border: 1px solid #000;
+    background: #1e1e1e;
+    box-shadow: var(--ase-shadow-inset);
+    color: #ffce00;
+}
+
+/* Explorer */
+[data-theme="aseprited"] .explorer-header {
+    background: #3d3d3d;
+    border-bottom: 1px solid #000;
+    padding: 4px 8px;
+    box-shadow: var(--ase-shadow-inset);
+}
+
+[data-theme="aseprited"] .explorer-title {
+    color: var(--accent-primary);
+    font-weight: bold;
+    text-transform: none;
+}
+
+/* Swatches */
+[data-theme="aseprited"] .swatch-button {
+    border-radius: 0;
+    border: 1px solid #000;
+}
+
+[data-theme="aseprited"] .swatch-button-active {
+    border: 2px solid #fff;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 1px #000;
+}

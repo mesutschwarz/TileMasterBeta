@@ -1,0 +1,12 @@
+@import "./common.css";
+@import "./dockview.theme.css";
+@import "./scrollbars.css";
+
+/* Themes */
+@import "./themes/nova.css";
+@import "./themes/magma.css";
+@import "./themes/frost.css";
+@import "./themes/hacker.css";
+@import "./themes/milkyway.css";
+@import "./themes/new-horizons.css";
+@import "./themes/aseprited.css";

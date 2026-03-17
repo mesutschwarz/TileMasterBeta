@@ -1,0 +1,46 @@
+[data-theme="magma"] {
+    --app-background: radial-gradient(circle at 80% 10%, rgba(239, 68, 68, 0.5) 0%, transparent 40%), radial-gradient(circle at 20% 90%, rgba(249, 115, 22, 0.5) 0%, transparent 40%), radial-gradient(circle at 50% 50%, rgba(234, 179, 8, 0.2) 0%, transparent 50%), #000000;
+    --bg-primary: rgba(0, 0, 0, 0.7);
+    --bg-secondary: rgba(15, 10, 5, 0.8);
+    --bg-tertiary: rgba(30, 20, 10, 0.9);
+    --bg-titlebar: rgba(0, 0, 0, 0.6);
+    --bg-activitybar: transparent;
+    --bg-statusbar: rgba(0, 0, 0, 0.5);
+
+    --bg-primary-rgb: 0 0 0;
+    --bg-secondary-rgb: 15 10 5;
+    --bg-tertiary-rgb: 30 20 10;
+    --bg-titlebar-rgb: 0 0 0;
+    --bg-activitybar-rgb: 0 0 0;
+    --bg-statusbar-rgb: 0 0 0;
+
+    --accent-primary: #f97316;
+    --accent-primary-rgb: 249 115 22;
+    --accent-secondary: #ef4444;
+    --accent-secondary-rgb: 239 68 68;
+
+    --text-primary: #fff7ed;
+    --text-secondary: #fdba74;
+    --text-disabled: #9a3412;
+
+    --ui-bg-hover: rgba(249, 115, 22, 0.1);
+    --ui-bg-hover-strong: rgba(249, 115, 22, 0.2);
+    --ui-bg-subtle: rgba(249, 115, 22, 0.03);
+    --ui-tab-container-bg: rgba(27, 14, 7, 0.9);
+    --ui-input-bg: rgba(0, 0, 0, 0.5);
+    --ui-input-border: rgba(249, 115, 22, 0.2);
+    --ui-border-subtle: rgba(249, 115, 22, 0.15);
+    --ui-border-strong: rgba(249, 115, 22, 0.4);
+
+    --ui-danger: #dc2626;
+    --ui-warning: #eab308;
+    --ui-success: #22c55e;
+    --ui-info: #06b6d4;
+
+    --success: #22c55e;
+    --success-rgb: 34 197 94;
+    --warning: #eab308;
+    --warning-rgb: 234 179 8;
+    --error: #dc2626;
+    --error-rgb: 220 38 38;
+}

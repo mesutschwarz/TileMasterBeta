@@ -4,61 +4,59 @@ import { useEditorStore, ViewMode } from '../../stores/editorStore'
 import { clsx } from 'clsx'
 import { Tooltip } from '../common/Tooltip'
 
+interface NavItem {
+    view: ViewMode
+    label: string
+    icon: typeof Grid
+    shortcut?: string
+}
+
 export const ActivityBar: React.FC = () => {
-    const { sidebarView, setSidebarView, sidebarVisible, setSidebarVisible, toggleSidebar, setShowSettings } = useEditorStore()
+    const { sidebarView, setSidebarView, sidebarVisible, setSidebarVisible, setShowSettings } = useEditorStore()
 
-    const handleViewClick = (newView: ViewMode) => {
-        if (sidebarView === newView) {
-            toggleSidebar()
-        } else {
-            setSidebarView(newView)
-            setSidebarVisible(true)
-        }
-    }
-
-    const NavButton: React.FC<{
-        id: ViewMode,
-        icon: React.ReactNode,
-        label: string,
-        shortcut: string
-    }> = ({ id, icon, label, shortcut }) => {
-        const active = sidebarView === id && sidebarVisible
-
-        return (
-            <Tooltip content={label} position="right" shortcut={shortcut}>
-                <button
-                    onClick={() => handleViewClick(id)}
-                    className={clsx(
-                        "h-10 w-10 mx-auto flex items-center justify-center transition-all relative group activity-icon",
-                        active && "active"
-                    )}
-                >
-                    {React.cloneElement(icon as React.ReactElement, {
-                        size: 24,
-                        strokeWidth: active ? 2 : 1.5
-                    })}
-                </button>
-            </Tooltip>
-        )
-    }
+    const navItems: NavItem[] = [
+        { view: 'tile', label: 'Tile Editor', icon: Grid, shortcut: 'T' },
+        { view: 'map', label: 'Map Builder', icon: MapIcon, shortcut: 'M' },
+    ]
 
     return (
-        <div className="activity-bar h-full flex flex-col items-center shrink-0 z-50">
-            <div className="flex flex-col gap-2 w-full px-2">
-                <NavButton id="tile" icon={<Grid />} label="Tiles Explorer" shortcut="T" />
-                <NavButton id="map" icon={<MapIcon />} label="Map Explorer" shortcut="V" />
+        <aside className="activity-bar">
+            <div className="activity-bar-group">
+                {navItems.map((item) => {
+                    const isActive = sidebarView === item.view && sidebarVisible
+                    return (
+                        <Tooltip key={item.view} content={item.label} shortcut={item.shortcut} position="right">
+                            <button
+                                onClick={() => {
+                                    if (sidebarView === item.view && sidebarVisible) {
+                                        setSidebarVisible(false)
+                                    } else {
+                                        setSidebarView(item.view)
+                                        setSidebarVisible(true)
+                                    }
+                                }}
+                                className={clsx(
+                                    "h-10 w-10 mx-auto flex items-center justify-center transition-colors activity-icon",
+                                    isActive && "active"
+                                )}
+                            >
+                                <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                            </button>
+                        </Tooltip>
+                    )
+                })}
             </div>
 
-            <div className="mt-auto flex flex-col gap-2 w-full px-2">
-                <Tooltip content="Settings" position="right" shortcut="Ctrl+,">
+            <div className="mt-auto activity-bar-group">
+                <Tooltip content="Settings" shortcut="," position="right">
                     <button
                         onClick={() => setShowSettings(true)}
-                        className="h-10 w-10 mx-auto flex items-center justify-center rounded-xl transition-colors activity-icon"
+                        className="h-10 w-10 mx-auto flex items-center justify-center transition-colors activity-icon"
                     >
                         <Settings size={22} strokeWidth={1.5} />
                     </button>
                 </Tooltip>
             </div>
-        </div>
+        </aside>
     )
 }

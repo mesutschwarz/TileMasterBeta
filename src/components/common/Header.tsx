@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { ChevronDown, Share2, HelpCircle, Settings as SettingsIcon, Save, FolderOpen } from 'lucide-react'
+import { ChevronDown, Share2, HelpCircle, Settings as SettingsIcon, Save, FolderOpen, Check } from 'lucide-react'
 import { useProjectStore } from '../../stores/projectStore'
 import { PLATFORMS } from '../../core/platforms'
 import { AppLogo } from '../../assets/AppLogo'
@@ -18,9 +18,8 @@ import { normalizeProjectName } from '../../utils/projectName'
 
 export const Header: React.FC = () => {
     const { platform, projectName, setProjectName, setPlatform, addTiles, selectTile, cleanupTiles, saveProject, loadProject } = useProjectStore()
-    const { setView, setShowSettings } = useEditorStore()
+    const { setView, setShowSettings, showHelp, setShowHelp, dockviewApi } = useEditorStore()
     const [showExport, setShowExport] = useState(false)
-    const [showHelp, setShowHelp] = useState(false)
     const [importFile, setImportFile] = useState<File | null>(null)
     const [codeImportData, setCodeImportData] = useState<{ result: CodeImportResult; fileName: string } | null>(null)
     const [showPlatformMenu, setShowPlatformMenu] = useState(false)
@@ -44,11 +43,9 @@ export const Header: React.FC = () => {
     }, [isEditingProjectName])
 
     React.useEffect(() => {
-        if (!showPlatformMenu) return
-
         const handlePointerDown = (event: MouseEvent) => {
             const target = event.target as Node
-            if (!platformMenuRef.current?.contains(target)) {
+            if (showPlatformMenu && !platformMenuRef.current?.contains(target)) {
                 setShowPlatformMenu(false)
             }
         }
@@ -85,12 +82,10 @@ export const Header: React.FC = () => {
             setCodeImportData({ result, fileName: file.name })
             if (fileInputRef.current) fileInputRef.current.value = ''
         } else {
-            // Assume image, open preview dialog
             setImportFile(file)
         }
     }
 
-    /** Remove the default empty tile & map if they're the only content in the project. */
     const removeDefaultsIfNeeded = () => {
         const state = useProjectStore.getState()
         const { tiles } = state.tileset
@@ -156,10 +151,8 @@ export const Header: React.FC = () => {
         const existingTileCount = useProjectStore.getState().tileset.tiles.length
         const adjustedMapData = mapData.map((idx) => (idx >= 0 ? idx + existingTileCount : idx))
 
-        // Add all tiles in one history entry
         addTiles(tiles, `Tile: Import ${tiles.length}`)
 
-        // Create auto-map
         const newMapId = crypto.randomUUID()
         const newMap: TileMap = {
             id: newMapId,
@@ -186,9 +179,8 @@ export const Header: React.FC = () => {
 
         if (tiles.length > 0) selectTile(tiles[0].id)
         setImportFile(null)
-        setView('map') // Switch to map view to show the result
+        setView('map')
 
-        // Reset input
         if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
@@ -204,10 +196,10 @@ export const Header: React.FC = () => {
         setIsEditingProjectName(false)
     }
 
-    const navButtonClass = "flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium text-text-primary hover:bg-ui-bg-hover transition-colors"
+    const navButtonClass = "nav-button"
 
     return (
-        <header className="h-14 bg-bg-titlebar border-b border-ui-border-subtle px-4 flex items-center justify-between z-10 shrink-0">
+        <header className="app-header">
             {showExport && <ExportDialog onClose={() => setShowExport(false)} />}
             {showHelp && <OnboardingModal onForceClose={() => setShowHelp(false)} forceOpen={true} />}
             {importFile && (
@@ -241,16 +233,16 @@ export const Header: React.FC = () => {
                 onChange={handleFileSelect}
             />
 
-            <div className="flex items-center gap-6 min-w-0">
+            <div className="header-container">
                 <div className="flex items-center gap-2 text-accent-primary shrink-0">
                     <AppLogo size={24} />
                     <h1 style={{ margin: 0 }}>
                         <AppWordmark fontSize="14px" fontWeight={700} letterSpacing="0" style={{ textTransform: 'none' }} />
                     </h1>
                 </div>
-                <div className="h-6 w-px bg-accent-primary/20 shrink-0" />
+                <div className="h-6 w-px bg-ui-border-subtle shrink-0" />
                 <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-sm font-semibold text-text-secondary">Project Name:</span>
+                    <span className="text-sm font-semibold text-text-secondary hidden md:inline">Project Name:</span>
                     {isEditingProjectName ? (
                         <input
                             ref={projectNameInputRef}
@@ -268,14 +260,14 @@ export const Header: React.FC = () => {
                                     cancelProjectNameEdit()
                                 }
                             }}
-                            className="h-8 min-w-[180px] max-w-[320px] rounded border border-ui-border-strong bg-bg-secondary px-2.5 text-sm font-medium text-text-primary outline-none focus:border-accent-primary"
+                            className="modern-input h-8 px-2 py-0 text-xs min-w-[120px]"
                             aria-label="Project Name"
                         />
                     ) : (
                         <button
                             type="button"
                             onClick={() => setIsEditingProjectName(true)}
-                            className="h-8 min-w-[180px] max-w-[320px] rounded border border-ui-border-subtle bg-bg-secondary/60 px-2.5 text-left text-sm font-medium text-text-primary truncate hover:border-ui-border-strong"
+                            className="list-item py-1 px-3 h-8 text-xs truncate max-w-[240px]"
                             title="Click to edit project name"
                         >
                             {projectLabel}
@@ -284,21 +276,21 @@ export const Header: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 shrink-0">
+            <div className="header-actions">
                 <nav className="flex items-center gap-1">
                     <button
                         onClick={() => setShowHelp(true)}
                         className={navButtonClass}
                     >
                         <HelpCircle size={14} />
-                        Help
+                        <span className="hidden lg:inline">Help</span>
                     </button>
                     <button
                         onClick={saveProject}
                         className={navButtonClass}
                     >
                         <Save size={14} />
-                        Save
+                        <span className="hidden lg:inline">Save</span>
                     </button>
 
                     <button
@@ -306,7 +298,7 @@ export const Header: React.FC = () => {
                         className={navButtonClass}
                     >
                         <FolderInput size={14} />
-                        Import
+                        <span className="hidden lg:inline">Import</span>
                     </button>
 
                     <button
@@ -314,20 +306,20 @@ export const Header: React.FC = () => {
                         className={navButtonClass}
                     >
                         <Share2 size={14} />
-                        Export
+                        <span className="hidden lg:inline">Export</span>
                     </button>
                 </nav>
 
-                <div className="h-6 w-px bg-accent-primary/20 shrink-0" />
+                <div className="h-6 w-px bg-ui-border-subtle shrink-0 mx-1" />
 
                 <div className="relative" ref={platformMenuRef}>
                     <button
                         onClick={() => setShowPlatformMenu((open) => !open)}
-                        className="flex items-center gap-2 bg-accent-primary/20 rounded-lg px-3 py-1.5"
+                        className="collision-button h-8 py-0 px-3 bg-accent-primary/10 border-accent-primary/20"
                         aria-haspopup="menu"
                         aria-expanded={showPlatformMenu}
                     >
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-accent-primary">Platform</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-accent-primary hidden sm:inline">Platform</span>
                         <span className="text-xs font-bold text-text-primary">{platform.name}</span>
                         <ChevronDown size={12} className="text-text-secondary" />
                     </button>
@@ -354,7 +346,7 @@ export const Header: React.FC = () => {
 
                 <button
                     onClick={loadProject}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary transition-colors border border-transparent hover:bg-ui-bg-hover"
+                    className="action-button p-2"
                     aria-label="Load project"
                 >
                     <FolderOpen size={14} />
@@ -362,7 +354,7 @@ export const Header: React.FC = () => {
 
                 <button
                     onClick={() => setShowSettings(true)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary hover:text-text-primary transition-colors border border-ui-border-subtle"
+                    className="action-button p-2 bg-bg-secondary border border-ui-border-subtle"
                     aria-label="Settings"
                 >
                     <SettingsIcon size={16} />

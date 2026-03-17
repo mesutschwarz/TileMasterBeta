@@ -26,7 +26,7 @@ function App() {
             {!loadingDone && (
                 <LoadingScreen onComplete={() => setLoadingDone(true)} />
             )}
-            <div className="h-screen flex flex-col app-shell overflow-hidden text-text-primary font-sans">
+            <div className="app-container app-shell font-sans">
                 <Header />
                 <div className="flex-1 flex overflow-hidden min-h-0">
                     {/* 1. Activity Bar (Fixed, Leftmost) */}
@@ -38,15 +38,15 @@ function App() {
                         {/* LEFT PANEL: SIDEBAR (Explorer) */}
                         {sidebarVisible && (
                             <>
-                                <Panel id="sidebar" defaultSize="24" minSize="16" maxSize="36" className="flex flex-col overflow-hidden border-r border-ui-border-subtle bg-bg-primary">
+                                <Panel id="sidebar" defaultSize="24" minSize="16" maxSize="36" className="panel-container">
                                     <SidePanel />
                                 </Panel>
-                                <Separator className="w-[1px] bg-ui-border-subtle hover:bg-accent-primary/60 transition-colors cursor-col-resize relative z-50 flex-shrink-0" />
+                                <Separator className="panel-separator" />
                             </>
                         )}
 
                         {/* RIGHT PANEL: EDITOR (Dockview) */}
-                        <Panel className="relative overflow-hidden bg-bg-primary flex flex-col">
+                        <Panel className="main-editor-panel">
                             <DockLayout />
                         </Panel>
                     </Group>

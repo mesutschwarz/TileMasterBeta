@@ -1,0 +1,47 @@
+[data-theme="nova"] {
+    --app-background: #0f172a;
+    --panel-surface: rgba(15, 23, 42, 0.3);
+    --bg-primary: rgba(2, 6, 23, 0.5);
+    --bg-secondary: rgba(15, 23, 42, 0.8);
+    --bg-tertiary: rgba(15, 23, 42, 0.5);
+    --bg-titlebar: rgba(15, 23, 42, 0.5);
+    --bg-activitybar: #0f172a;
+    --bg-statusbar: #0f172a;
+
+    --bg-primary-rgb: 2 6 23;
+    --bg-secondary-rgb: 15 23 42;
+    --bg-tertiary-rgb: 15 23 42;
+    --bg-titlebar-rgb: 15 23 42;
+    --bg-activitybar-rgb: 15 23 42;
+    --bg-statusbar-rgb: 15 23 42;
+
+    --accent-primary: #5dadec;
+    --accent-primary-rgb: 93 173 236;
+    --accent-secondary: #eff6ff;
+    --accent-secondary-rgb: 239 246 255;
+
+    --text-primary: #eff6ff;
+    --text-secondary: #94a3b8;
+    --text-disabled: #64748b;
+
+    --ui-bg-hover: rgba(93, 173, 236, 0.1);
+    --ui-bg-hover-strong: rgba(93, 173, 236, 0.14);
+    --ui-bg-subtle: rgba(93, 173, 236, 0.05);
+    --ui-tab-container-bg: #0b1124;
+    --ui-input-bg: rgba(15, 23, 42, 0.85);
+    --ui-input-border: rgba(93, 173, 236, 0.2);
+    --ui-border-subtle: rgba(93, 173, 236, 0.1);
+    --ui-border-strong: rgba(93, 173, 236, 0.2);
+
+    --ui-danger: #f43f5e;
+    --ui-warning: #f59e0b;
+    --ui-success: #10b981;
+    --ui-info: #3b82f6;
+
+    --success: #10b981;
+    --success-rgb: 16 185 129;
+    --warning: #f59e0b;
+    --warning-rgb: 245 158 11;
+    --error: #f43f5e;
+    --error-rgb: 244 63 94;
+}

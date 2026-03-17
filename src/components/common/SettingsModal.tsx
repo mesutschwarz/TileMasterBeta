@@ -36,79 +36,80 @@ export const SettingsModal: React.FC = () => {
         getThemeSwatch('--ui-warning', '#f59e0b')
     ]), [themeId])
 
-    const TabButton: React.FC<{ id: typeof activeTab, label: string, icon: React.ReactNode }> = ({ id, label, icon }) => (
-        <button
-            onClick={() => setActiveTab(id)}
-            className={clsx(
-                "flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2",
-                activeTab === id
-                    ? "border-accent-primary text-white bg-white/5"
-                    : "border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
-            )}
-        >
-            {icon}
-            {label}
-        </button>
-    )
-
     return (
         <Modal
             isOpen={showSettings}
             onClose={() => setShowSettings(false)}
             title="Preferences"
             icon={<SettingsIcon size={18} />}
-            maxWidth="lg"
+            maxWidth="3xl"
             footer={
                 <div className="flex items-center justify-between w-full">
                     <button
                         onClick={resetSettings}
-                        className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-ui-border-strong text-gray-400 hover:text-white hover:border-ui-danger hover:bg-ui-danger/10 transition-all"
+                        className="modal-button-secondary border-ui-border-strong hover:border-ui-danger hover:bg-ui-danger/10"
                     >
-                        Reset to Defaults
+                        Reset Defaults
                     </button>
                     <button
                         onClick={() => setShowSettings(false)}
-                        className="px-6 py-2 bg-accent-primary hover:bg-accent-secondary text-white text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-accent-primary/20"
+                        className="modal-button-primary"
                     >
                         Save & Close
                     </button>
                 </div>
             }
         >
-            <div className="flex flex-col">
-                {/* Tabs */}
-                <div className="flex bg-bg-tertiary/10 border-b border-ui-border overflow-x-auto no-scrollbar">
-                    <TabButton id="tile" label="Tile Grid" icon={<Grid size={14} />} />
-                    <TabButton id="map" label="Map Grid" icon={<MapIcon size={14} />} />
-                    <TabButton id="editor" label="Appearance" icon={<Eye size={14} />} />
+            <div className="flex flex-col md:flex-row flex-1 min-h-[400px]">
+                {/* Tabs Sidebar */}
+                <div className="modal-sidebar md:w-64 space-y-2">
+                    {[
+                        { id: 'tile', label: 'Tile Grid', icon: Grid },
+                        { id: 'map', label: 'Map Grid', icon: MapIcon },
+                        { id: 'editor', label: 'Appearance', icon: Eye },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={clsx(
+                                "w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3",
+                                activeTab === tab.id
+                                    ? "bg-accent-primary/10 text-accent-primary border border-accent-primary/20 shadow-sm"
+                                    : "text-text-secondary hover:bg-white/5 border border-transparent"
+                            )}
+                        >
+                            <tab.icon size={16} />
+                            <span className="text-xs font-bold uppercase tracking-wider">{tab.label}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* Tab Content */}
-                <div className="p-8 space-y-8 min-h-[400px]">
+                <div className="modal-main-content p-8 md:p-12">
                     {activeTab === 'tile' && (
                         <div className="space-y-8 animate-in fade-in duration-200">
-                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border">
+                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border-subtle">
                                 <div className="space-y-1">
-                                    <div className="text-xs font-bold text-white uppercase tracking-wider">Enable Tile Grid</div>
-                                    <div className="text-[10px] text-gray-500 italic">Show thin lines between pixels on the tile canvas</div>
+                                    <div className="text-xs font-bold text-text-primary uppercase tracking-wider">Enable Tile Grid</div>
+                                    <div className="text-[10px] text-text-disabled italic">Show thin lines between pixels on the tile canvas</div>
                                 </div>
                                 <button
                                     onClick={() => updateGridSettings({ enabled: !gridSettings.enabled })}
                                     className={clsx(
-                                        "w-10 h-5 rounded-full relative transition-colors",
-                                        gridSettings.enabled ? "bg-accent-primary" : "bg-white/10"
+                                        "toggle-switch",
+                                        gridSettings.enabled ? "toggle-switch-on" : "toggle-switch-off"
                                     )}
                                 >
                                     <div className={clsx(
-                                        "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                                        gridSettings.enabled ? "left-6" : "left-1"
+                                        "toggle-knob",
+                                        gridSettings.enabled ? "toggle-knob-on" : "toggle-knob-off"
                                     )} />
                                 </button>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Grid Opacity</label>
+                                    <label className="label-xs opacity-70">Grid Opacity</label>
                                     <span className="text-[10px] font-mono text-accent-primary">{(gridSettings.opacity * 100).toFixed(0)}%</span>
                                 </div>
                                 <input
@@ -119,7 +120,7 @@ export const SettingsModal: React.FC = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Grid Color</label>
+                                <label className="label-xs opacity-70">Grid Color</label>
                                 <div className="flex gap-3">
                                     {tileGridSwatches.map(color => (
                                         <button
@@ -129,7 +130,7 @@ export const SettingsModal: React.FC = () => {
                                                 "w-10 h-10 rounded-xl border-2 transition-all shadow-lg",
                                                 gridSettings.color === color
                                                     ? "border-accent-primary scale-110 shadow-accent-primary/20"
-                                                    : "border-ui-border hover:border-ui-border-strong"
+                                                    : "border-ui-border-subtle hover:border-ui-border-strong"
                                             )}
                                             style={{ backgroundColor: color }}
                                         />
@@ -141,28 +142,28 @@ export const SettingsModal: React.FC = () => {
 
                     {activeTab === 'map' && (
                         <div className="space-y-8 animate-in fade-in duration-200">
-                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border">
+                            <div className="flex items-center justify-between p-4 bg-white/2 rounded-xl border border-ui-border-subtle">
                                 <div className="space-y-1">
-                                    <div className="text-xs font-bold text-white uppercase tracking-wider">Enable Map Grid</div>
-                                    <div className="text-[10px] text-gray-500 italic">Show lines representing tiles on the map canvas</div>
+                                    <div className="text-xs font-bold text-text-primary uppercase tracking-wider">Enable Map Grid</div>
+                                    <div className="text-[10px] text-text-disabled italic">Show lines representing tiles on the map canvas</div>
                                 </div>
                                 <button
                                     onClick={() => updateMapGridSettings({ enabled: !mapGridSettings.enabled })}
                                     className={clsx(
-                                        "w-10 h-5 rounded-full relative transition-colors",
-                                        mapGridSettings.enabled ? "bg-accent-primary" : "bg-white/10"
+                                        "toggle-switch",
+                                        mapGridSettings.enabled ? "toggle-switch-on" : "toggle-switch-off"
                                     )}
                                 >
                                     <div className={clsx(
-                                        "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-                                        mapGridSettings.enabled ? "left-6" : "left-1"
+                                        "toggle-knob",
+                                        mapGridSettings.enabled ? "toggle-knob-on" : "toggle-knob-off"
                                     )} />
                                 </button>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Grid Size (Pixels per line)</label>
+                                    <label className="label-xs opacity-70">Grid Size (Pixels per line)</label>
                                     <span className="text-[10px] font-mono text-accent-primary">{mapGridSettings.size}px</span>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -174,15 +175,14 @@ export const SettingsModal: React.FC = () => {
                                     <input
                                         type="number" value={mapGridSettings.size} min={1} max={32}
                                         onChange={(e) => updateMapGridSettings({ size: parseInt(e.target.value) || 1 })}
-                                        className="w-16 bg-black/40 border border-ui-border-strong rounded-lg px-2 py-1.5 text-xs text-white text-center font-mono focus:border-accent-primary outline-none"
+                                        className="w-16 modern-input px-2 py-1.5 text-xs text-center font-mono"
                                     />
                                 </div>
-                                <div className="text-[9px] text-gray-500 italic bg-white/5 p-2 rounded-lg">Pro-tip: Set this to match your target platform's tile size (usually 8).</div>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Grid Opacity</label>
+                                    <label className="label-xs opacity-70">Grid Opacity</label>
                                     <span className="text-[10px] font-mono text-accent-primary">{(mapGridSettings.opacity * 100).toFixed(0)}%</span>
                                 </div>
                                 <input
@@ -193,7 +193,7 @@ export const SettingsModal: React.FC = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Grid Color</label>
+                                <label className="label-xs opacity-70">Grid Color</label>
                                 <div className="flex gap-3">
                                     {mapGridSwatches.map(color => (
                                         <button
@@ -201,7 +201,7 @@ export const SettingsModal: React.FC = () => {
                                             onClick={() => updateMapGridSettings({ color })}
                                             className={clsx(
                                                 "w-10 h-10 rounded-xl border-2 transition-all shadow-lg",
-                                                mapGridSettings.color === color ? "border-accent-primary scale-110 shadow-accent-primary/20" : "border-ui-border hover:border-ui-border-strong"
+                                                mapGridSettings.color === color ? "border-accent-primary scale-110 shadow-accent-primary/20" : "border-ui-border-subtle hover:border-ui-border-strong"
                                             )}
                                             style={{ backgroundColor: color }}
                                         />
@@ -213,25 +213,25 @@ export const SettingsModal: React.FC = () => {
 
                     {activeTab === 'editor' && (
                         <div className="space-y-6 animate-in fade-in duration-200">
-                            <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Theme</div>
+                            <div className="label-xs opacity-70">Theme Selection</div>
                             <div className="space-y-1 max-h-[260px] overflow-y-auto custom-scrollbar pr-1">
                                 {themeEntries.map((theme) => (
                                     <button
                                         key={theme.id}
                                         onClick={() => setThemeId(theme.id)}
                                         className={clsx(
-                                            "w-full px-3 py-2 rounded flex items-center justify-between text-left transition-all",
+                                            "w-full px-4 py-3 rounded-xl flex items-center justify-between text-left transition-all border",
                                             themeId === theme.id
-                                                ? "bg-accent-primary/15 text-white"
-                                                : "hover:bg-white/5 text-gray-300"
+                                                ? "bg-accent-primary/10 border-accent-primary/30 text-text-primary"
+                                                : "bg-white/2 border-transparent text-text-secondary hover:bg-white/5"
                                         )}
                                     >
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-medium">{theme.label}</span>
-                                            <span className="text-[9px] uppercase tracking-widest text-gray-500">{theme.type}</span>
+                                            <span className="text-sm font-bold uppercase tracking-wider">{theme.label}</span>
+                                            <span className="badge mt-0.5">{theme.type} mode</span>
                                         </div>
                                         {themeId === theme.id && (
-                                            <span className="text-[9px] uppercase tracking-widest text-accent-primary font-bold">Active</span>
+                                            <span className="badge text-accent-primary font-bold">Active</span>
                                         )}
                                     </button>
                                 ))}
